@@ -1,0 +1,20 @@
+### Alle Greetings abrufen
+GET http://localhost:8080/api/greetings
+Content-Type: application/json
+
+### Greeting erstellen (mit Name)
+POST http://localhost:8080/api/greetings?name=Jacob
+
+### Greeting erstellen (ohne Name → default "World")
+POST http://localhost:8080/api/greetings
+
+
+
+### Familie erstellen
+POST http://localhost:8080/api/families?name=Heins
+
+### Familien abrufen
+GET http://localhost:8080/api/families
+
+### Person zu Familie hinzufügen
+POST http://localhost:8080/api/families/2/members?name=Aaron
