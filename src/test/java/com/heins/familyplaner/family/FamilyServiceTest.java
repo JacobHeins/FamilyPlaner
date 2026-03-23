@@ -1,10 +1,16 @@
 package com.heins.familyplaner.family;
 
+import com.heins.familyplaner.family.dtos.AddFamilyMemberRequest;
 import com.heins.familyplaner.family.dtos.FamilyDto;
+import com.heins.familyplaner.family.dtos.FamilyMemberDto;
+import com.heins.familyplaner.family.dtos.FamilyRoleDto;
 import com.heins.familyplaner.family.entities.Family;
 import com.heins.familyplaner.family.entities.FamilyMember;
+import com.heins.familyplaner.family.mapper.FamilyMapper;
+import com.heins.familyplaner.family.mapper.FamilyRoleMapper;
 import com.heins.familyplaner.family.repositories.FamilyMemberRepository;
 import com.heins.familyplaner.family.repositories.FamilyRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,8 +36,20 @@ public class FamilyServiceTest {
     @Mock
     FamilyMemberRepository familyMemberRepository;
 
-    @InjectMocks
-    FamilyService familyService;
+    FamilyRoleMapper familyRoleMapper = new FamilyRoleMapper(); // ✅ real instance
+    FamilyMapper familyMapper = new FamilyMapper(familyRoleMapper); // ✅ real instance
+
+    FamilyService familyService; // ✅ manually created
+
+    @BeforeEach
+    void setUp() {
+        familyService = new FamilyService(
+                familyRepository,
+                familyMemberRepository,
+                familyMapper,
+                familyRoleMapper
+        );
+    }
 
     //-------------addFamily-------------
     @Test
@@ -139,11 +157,13 @@ public class FamilyServiceTest {
         when(familyRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
 
-        FamilyDto result = familyService.addFamilyMember(1L, "Jacob");
+        AddFamilyMemberRequest request = new AddFamilyMemberRequest(1L, "Jacob", FamilyRoleDto.DAD);
+        FamilyDto result = familyService.addFamilyMember(request);
 
         assertEquals("Heins", result.name());
         assertEquals(1, result.familyMembers().size());
         assertEquals("Jacob", result.familyMembers().getFirst().name());
+        assertEquals(FamilyRoleDto.DAD, result.familyMembers().getFirst().role());
 
         verify(familyMemberRepository).save(any(FamilyMember.class));
         verify(familyRepository).save(family);
@@ -153,8 +173,9 @@ public class FamilyServiceTest {
     void addFamilyMember_throwsException_whenFamilyMissing(){
         when(familyRepository.findById(123L)).thenReturn(Optional.empty());
 
+        AddFamilyMemberRequest request = new AddFamilyMemberRequest(123L, "Jacob", FamilyRoleDto.DAD);
         RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> familyService.addFamilyMember(123L, "Jacob"));
+                () -> familyService.addFamilyMember(request));
 
         assertEquals("Family not found: 123", ex.getMessage());
     }

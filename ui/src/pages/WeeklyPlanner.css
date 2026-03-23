@@ -1,0 +1,248 @@
+.planner-page {
+  min-width: 0;
+}
+
+.week-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.week-nav-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition), color var(--transition);
+}
+
+.week-nav-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.week-nav-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 180px;
+  text-align: center;
+}
+
+/* Grid */
+.planner-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+
+@media (max-width: 1100px) {
+  .planner-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (max-width: 700px) {
+  .planner-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.planner-col {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: border-color var(--transition);
+}
+
+.planner-col.today {
+  border-color: var(--accent);
+}
+
+.planner-col-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.planner-day-name {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-secondary);
+}
+
+.planner-day-num {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.planner-day-num.today-num {
+  color: var(--accent);
+}
+
+.planner-entries {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 60px;
+}
+
+/* Entry cards */
+.planner-entry {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 4px;
+  border-radius: 6px;
+  padding: 8px 8px 8px 10px;
+  border-left: 3px solid;
+}
+
+.entry-accent { background: var(--accent-soft);  border-left-color: var(--accent);  }
+.entry-green  { background: var(--green-soft);   border-left-color: var(--green);   }
+.entry-orange { background: var(--orange-soft);  border-left-color: var(--orange);  }
+.entry-pink   { background: var(--pink-soft);    border-left-color: var(--pink);    }
+.entry-blue   { background: var(--blue-soft);    border-left-color: var(--blue);    }
+
+.entry-body { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+.entry-title  { font-size: 12px; font-weight: 600; color: var(--text-primary); truncate: ellipsis; }
+.entry-member { font-size: 11px; color: var(--text-secondary); }
+
+.entry-remove {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background var(--transition), color var(--transition);
+}
+
+.entry-remove:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+/* Add button */
+.planner-add-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: transparent;
+  border: 1px dashed var(--border);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  transition: border-color var(--transition), color var(--transition), background var(--transition);
+  width: 100%;
+  justify-content: center;
+}
+
+.planner-add-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* Add form */
+.add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.add-input,
+.add-select {
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font-size: 12px;
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.add-input:focus,
+.add-select:focus {
+  border-color: var(--accent);
+}
+
+.add-select option {
+  background: var(--bg-elevated);
+}
+
+.add-color-row {
+  display: flex;
+  gap: 6px;
+}
+
+.color-swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  transition: transform var(--transition), border-color var(--transition);
+}
+
+.color-swatch.selected {
+  border-color: #fff;
+  transform: scale(1.2);
+}
+
+.swatch-accent { background: var(--accent); }
+.swatch-green  { background: var(--green);  }
+.swatch-orange { background: var(--orange); }
+.swatch-pink   { background: var(--pink);   }
+.swatch-blue   { background: var(--blue);   }
+
+.add-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.add-cancel,
+.add-submit {
+  flex: 1;
+  padding: 6px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  transition: background var(--transition);
+}
+
+.add-cancel {
+  background: var(--bg-hover);
+  color: var(--text-secondary);
+}
+
+.add-cancel:hover {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+.add-submit {
+  background: var(--accent);
+  color: #fff;
+}
+
+.add-submit:hover {
+  background: var(--accent-hover);
+}
