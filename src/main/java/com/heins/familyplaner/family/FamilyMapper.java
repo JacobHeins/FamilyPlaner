@@ -2,9 +2,9 @@ package com.heins.familyplaner.family;
 
 
 import com.heins.familyplaner.family.dtos.FamilyDto;
-import com.heins.familyplaner.family.dtos.PersonDto;
+import com.heins.familyplaner.family.dtos.FamilyMemberDto;
 import com.heins.familyplaner.family.entities.Family;
-import com.heins.familyplaner.family.entities.Person;
+import com.heins.familyplaner.family.entities.FamilyMember;
 
 import java.util.stream.Collectors;
 
@@ -21,10 +21,10 @@ public class FamilyMapper {
         );
     }
 
-    public static PersonDto toDto(Person person) {
-        return new PersonDto(
-                person.getId(),
-                person.getName()
+    public static FamilyMemberDto toDto(FamilyMember familyMember) {
+        return new FamilyMemberDto(
+                familyMember.getId(),
+                familyMember.getName()
         );
     }
 }

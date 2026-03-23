@@ -24,11 +24,11 @@ public class Family {
     private String name;
 
     @OneToMany(mappedBy = "family", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Person> familyMembers = new ArrayList<>();
+    private final List<FamilyMember> familyMembers = new ArrayList<>();
 
-    public void addPerson(Person person) {
-        familyMembers.add(person);
-        person.setFamily(this);
+    public void addPerson(FamilyMember familyMember) {
+        familyMembers.add(familyMember);
+        familyMember.setFamily(this);
     }
 
     // --- GETTERS ---
@@ -40,7 +40,7 @@ public class Family {
         return name;
     }
 
-    public List<Person> getFamilyMembers() {
+    public List<FamilyMember> getFamilyMembers() {
         return familyMembers;
     }
 }

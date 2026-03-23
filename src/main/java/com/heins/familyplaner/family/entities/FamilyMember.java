@@ -3,12 +3,12 @@ package com.heins.familyplaner.family.entities;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name="persons")
-public class Person {
+@Table(name="familyMembers")
+public class FamilyMember {
 
-    public Person() {}
+    public FamilyMember() {}
 
-    public Person(String name) {
+    public FamilyMember(String name) {
         this.name = name;
     }
 
