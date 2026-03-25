@@ -54,7 +54,9 @@
   font-size: 14px;
   font-weight: 500;
   color: var(--text-secondary);
-  transition: background var(--transition), color var(--transition);
+  transition:
+    background var(--transition),
+    color var(--transition);
 }
 
 .sidebar-link:hover {

@@ -13,7 +13,9 @@
   transition: background var(--transition);
   white-space: nowrap;
 }
-.btn-secondary:hover { background: var(--bg-hover); }
+.btn-secondary:hover {
+  background: var(--bg-hover);
+}
 
 /* Error banner */
 .error-banner {
@@ -37,7 +39,9 @@
   font-size: 13px;
   font-weight: 600;
 }
-.error-retry:hover { background: rgba(255, 80, 80, 0.35); }
+.error-retry:hover {
+  background: rgba(255, 80, 80, 0.35);
+}
 
 /* Inline form card */
 .member-form-inline {
@@ -63,8 +67,14 @@
   font-size: 15px;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
-.spin { animation: spin 1s linear infinite; }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.spin {
+  animation: spin 1s linear infinite;
+}
 
 /* Family section */
 .family-section {
@@ -110,7 +120,9 @@
   align-items: center;
   gap: 8px;
   position: relative;
-  transition: border-color var(--transition), transform var(--transition);
+  transition:
+    border-color var(--transition),
+    transform var(--transition);
 }
 
 .member-card:hover {
@@ -131,10 +143,14 @@
   align-items: center;
   justify-content: center;
   opacity: 0;
-  transition: opacity var(--transition), background var(--transition);
+  transition:
+    opacity var(--transition),
+    background var(--transition);
 }
 
-.member-card:hover .member-remove { opacity: 1; }
+.member-card:hover .member-remove {
+  opacity: 1;
+}
 
 .member-remove:hover {
   background: rgba(255, 80, 80, 0.15);
@@ -153,11 +169,26 @@
   margin-bottom: 4px;
 }
 
-.avatar-accent { background: var(--accent-soft);  color: var(--accent);  }
-.avatar-green  { background: var(--green-soft);   color: var(--green);   }
-.avatar-orange { background: var(--orange-soft);  color: var(--orange);  }
-.avatar-pink   { background: var(--pink-soft);    color: var(--pink);    }
-.avatar-blue   { background: var(--blue-soft);    color: var(--blue);    }
+.avatar-accent {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.avatar-green {
+  background: var(--green-soft);
+  color: var(--green);
+}
+.avatar-orange {
+  background: var(--orange-soft);
+  color: var(--orange);
+}
+.avatar-pink {
+  background: var(--pink-soft);
+  color: var(--pink);
+}
+.avatar-blue {
+  background: var(--blue-soft);
+  color: var(--blue);
+}
 
 .member-name {
   font-size: 16px;
@@ -172,11 +203,26 @@
   border-radius: 99px;
 }
 
-.role-accent { background: var(--accent-soft);  color: var(--accent);  }
-.role-green  { background: var(--green-soft);   color: var(--green);   }
-.role-orange { background: var(--orange-soft);  color: var(--orange);  }
-.role-pink   { background: var(--pink-soft);    color: var(--pink);    }
-.role-blue   { background: var(--blue-soft);    color: var(--blue);    }
+.role-accent {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.role-green {
+  background: var(--green-soft);
+  color: var(--green);
+}
+.role-orange {
+  background: var(--orange-soft);
+  color: var(--orange);
+}
+.role-pink {
+  background: var(--pink-soft);
+  color: var(--pink);
+}
+.role-blue {
+  background: var(--blue-soft);
+  color: var(--blue);
+}
 
 .member-stats {
   display: flex;
@@ -213,8 +259,12 @@
   transition: border-color var(--transition);
 }
 
-.fm-input:focus { border-color: var(--accent); }
-.fm-input option { background: var(--bg-elevated); }
+.fm-input:focus {
+  border-color: var(--accent);
+}
+.fm-input option {
+  background: var(--bg-elevated);
+}
 
 .fm-palette {
   display: flex;
@@ -227,7 +277,9 @@
   height: 20px;
   border-radius: 50%;
   border: 2px solid transparent;
-  transition: transform var(--transition), border-color var(--transition);
+  transition:
+    transform var(--transition),
+    border-color var(--transition);
 }
 
 .color-swatch.selected {
@@ -235,11 +287,21 @@
   transform: scale(1.2);
 }
 
-.swatch-accent { background: var(--accent); }
-.swatch-green  { background: var(--green);  }
-.swatch-orange { background: var(--orange); }
-.swatch-pink   { background: var(--pink);   }
-.swatch-blue   { background: var(--blue);   }
+.swatch-accent {
+  background: var(--accent);
+}
+.swatch-green {
+  background: var(--green);
+}
+.swatch-orange {
+  background: var(--orange);
+}
+.swatch-pink {
+  background: var(--pink);
+}
+.swatch-blue {
+  background: var(--blue);
+}
 
 .add-actions {
   display: flex;
@@ -271,4 +333,6 @@
   color: #fff;
 }
 
-.add-submit:hover { background: var(--accent-hover); }
+.add-submit:hover {
+  background: var(--accent-hover);
+}

@@ -1,10 +1,10 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import Layout from './components/Layout'
-import Dashboard from './pages/Dashboard'
-import WeeklyPlanner from './pages/WeeklyPlanner'
-import FamilyMembers from './pages/FamilyMembers'
-import TasksEvents from './pages/TasksEvents'
-import './App.css'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Layout from "./components/Layout";
+import Dashboard from "./pages/Dashboard";
+import WeeklyPlanner from "./pages/WeeklyPlanner";
+import FamilyMembers from "./pages/FamilyMembers";
+import TasksEvents from "./pages/TasksEvents";
+import "./App.css";
 
 function App() {
   return (
@@ -18,7 +18,7 @@ function App() {
         </Route>
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;

@@ -23,8 +23,12 @@
   transition: border-color var(--transition);
 }
 
-.te-input:focus { border-color: var(--accent); }
-.te-input option { background: var(--bg-elevated); }
+.te-input:focus {
+  border-color: var(--accent);
+}
+.te-input option {
+  background: var(--bg-elevated);
+}
 
 .type-toggle {
   display: flex;
@@ -45,10 +49,14 @@
   font-weight: 600;
   color: var(--text-secondary);
   background: transparent;
-  transition: background var(--transition), color var(--transition);
+  transition:
+    background var(--transition),
+    color var(--transition);
 }
 
-.type-btn:hover { color: var(--text-primary); }
+.type-btn:hover {
+  color: var(--text-primary);
+}
 
 .type-btn.active {
   background: var(--accent);
@@ -73,11 +81,18 @@
   font-weight: 600;
   color: var(--text-secondary);
   background: transparent;
-  transition: background var(--transition), color var(--transition);
+  transition:
+    background var(--transition),
+    color var(--transition);
 }
 
-.te-tab:hover { color: var(--text-primary); }
-.te-tab.active { background: var(--accent); color: #fff; }
+.te-tab:hover {
+  color: var(--text-primary);
+}
+.te-tab.active {
+  background: var(--accent);
+  color: #fff;
+}
 
 /* List */
 .te-list {
@@ -104,8 +119,12 @@
   transition: background var(--transition);
 }
 
-.te-item:last-child { border-bottom: none; }
-.te-item:hover { background: var(--bg-hover); }
+.te-item:last-child {
+  border-bottom: none;
+}
+.te-item:hover {
+  background: var(--bg-hover);
+}
 
 .te-item.done .te-title {
   text-decoration: line-through;
@@ -122,7 +141,9 @@
   justify-content: center;
   flex-shrink: 0;
   background: transparent;
-  transition: background var(--transition), border-color var(--transition);
+  transition:
+    background var(--transition),
+    border-color var(--transition);
   cursor: pointer;
 }
 
@@ -139,8 +160,15 @@
   gap: 2px;
 }
 
-.te-title { font-size: 14px; font-weight: 500; color: var(--text-primary); }
-.te-meta  { font-size: 12px; color: var(--text-secondary); }
+.te-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+.te-meta {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
 
 .te-badge {
   font-size: 11px;
@@ -151,8 +179,14 @@
   letter-spacing: 0.5px;
 }
 
-.badge-task  { background: var(--accent-soft);  color: var(--accent);  }
-.badge-event { background: var(--orange-soft);  color: var(--orange);  }
+.badge-task {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.badge-event {
+  background: var(--orange-soft);
+  color: var(--orange);
+}
 
 .te-delete {
   width: 30px;
@@ -164,10 +198,15 @@
   align-items: center;
   justify-content: center;
   opacity: 0;
-  transition: opacity var(--transition), background var(--transition), color var(--transition);
+  transition:
+    opacity var(--transition),
+    background var(--transition),
+    color var(--transition);
 }
 
-.te-item:hover .te-delete { opacity: 1; }
+.te-item:hover .te-delete {
+  opacity: 1;
+}
 
 .te-delete:hover {
   background: rgba(255, 80, 80, 0.15);
