@@ -11,7 +11,7 @@ import java.time.Instant;
 
 @Getter
 @Entity
-@Table(name="familyMembers")
+@Table(name="family_members")
 @EntityListeners(AuditingEntityListener.class)
 public class FamilyMember {
 
