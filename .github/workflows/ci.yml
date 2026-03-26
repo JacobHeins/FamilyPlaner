@@ -11,13 +11,19 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
+    # Ephemeral CI-only credentials — no real data, container is destroyed after the run
+    env:
+      DB_NAME: familyplaner
+      DB_USERNAME: ci_user
+      DB_PASSWORD: ci_password
+
     services:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_DB: familyplaner
-          POSTGRES_USER: admin
-          POSTGRES_PASSWORD: secret
+          POSTGRES_DB: ${{ env.DB_NAME }}
+          POSTGRES_USER: ${{ env.DB_USERNAME }}
+          POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
         ports:
           - 5432:5432
         options: >-
@@ -40,9 +46,9 @@ jobs:
       - name: Build and run tests
         run: ./mvnw verify
         env:
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/familyplaner
-          SPRING_DATASOURCE_USERNAME: admin
-          SPRING_DATASOURCE_PASSWORD: secret
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/${{ env.DB_NAME }}
+          SPRING_DATASOURCE_USERNAME: ${{ env.DB_USERNAME }}
+          SPRING_DATASOURCE_PASSWORD: ${{ env.DB_PASSWORD }}
 
       - name: Publish test report
         uses: mikepenz/action-junit-report@v4

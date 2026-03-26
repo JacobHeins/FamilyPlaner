@@ -42,3 +42,4 @@ src/main/resources/static/
 ### Production secrets — never commit ###
 .env
 .env.prod
+dev-tools/.env
