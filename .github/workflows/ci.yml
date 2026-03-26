@@ -10,28 +10,6 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-
-    # Ephemeral CI-only credentials — no real data, container is destroyed after the run
-    env:
-      DB_NAME: familyplaner
-      DB_USERNAME: ci_user
-      DB_PASSWORD: ci_password
-
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_DB: ${{ env.DB_NAME }}
-          POSTGRES_USER: ${{ env.DB_USERNAME }}
-          POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -43,12 +21,11 @@ jobs:
           distribution: "temurin"
           cache: maven
 
+      - name: Debug test resources
+        run: ls -R src/test/resources
+
       - name: Build and run tests
         run: ./mvnw verify
-        env:
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/${{ env.DB_NAME }}
-          SPRING_DATASOURCE_USERNAME: ${{ env.DB_USERNAME }}
-          SPRING_DATASOURCE_PASSWORD: ${{ env.DB_PASSWORD }}
 
       - name: Publish test report
         uses: mikepenz/action-junit-report@v4
