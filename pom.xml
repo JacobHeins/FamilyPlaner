@@ -119,6 +119,16 @@
 
     </dependencies>
 
+    <profiles>
+        <!-- Used in the Docker build: UI is already built in Stage 1, skip here -->
+        <profile>
+            <id>skip-ui</id>
+            <properties>
+                <skip.frontend>true</skip.frontend>
+            </properties>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>
@@ -132,6 +142,7 @@
                 <configuration>
                     <workingDirectory>ui</workingDirectory>
                     <installDirectory>target</installDirectory>
+                    <skip>${skip.frontend}</skip>
                 </configuration>
                 <executions>
                     <execution>
