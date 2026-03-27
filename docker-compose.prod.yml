@@ -16,6 +16,9 @@ services:
 
   app:
     image: ghcr.io/${GITHUB_REPOSITORY}/family-planer:${IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: Dockerfile
     restart: unless-stopped
     depends_on:
       db:
