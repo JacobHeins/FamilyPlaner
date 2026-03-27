@@ -1,0 +1,8 @@
+services:
+  ui:
+    image: mcr.microsoft.com/devcontainers/javascript-node:22
+    volumes:
+      - ..:/workspace:cached
+    command: sleep infinity
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
