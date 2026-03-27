@@ -1,0 +1,214 @@
+.te-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.te-form-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.te-input {
+  flex: 1;
+  min-width: 120px;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font-size: 14px;
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.te-input:focus {
+  border-color: var(--accent);
+}
+.te-input option {
+  background: var(--bg-elevated);
+}
+
+.type-toggle {
+  display: flex;
+  gap: 4px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+}
+
+.type-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  transition:
+    background var(--transition),
+    color var(--transition);
+}
+
+.type-btn:hover {
+  color: var(--text-primary);
+}
+
+.type-btn.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* Tabs */
+.te-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  width: fit-content;
+}
+
+.te-tab {
+  padding: 7px 18px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  transition:
+    background var(--transition),
+    color var(--transition);
+}
+
+.te-tab:hover {
+  color: var(--text-primary);
+}
+.te-tab.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* List */
+.te-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow: hidden;
+}
+
+.te-empty {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+  padding: 24px;
+  margin: 0;
+}
+
+.te-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  transition: background var(--transition);
+}
+
+.te-item:last-child {
+  border-bottom: none;
+}
+.te-item:hover {
+  background: var(--bg-hover);
+}
+
+.te-item.done .te-title {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.task-check {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: transparent;
+  transition:
+    background var(--transition),
+    border-color var(--transition);
+  cursor: pointer;
+}
+
+.task-check.checked {
+  background: var(--green);
+  border-color: var(--green);
+  color: #000;
+}
+
+.te-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.te-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+.te-meta {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.te-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 99px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-task {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.badge-event {
+  background: var(--orange-soft);
+  color: var(--orange);
+}
+
+.te-delete {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition:
+    opacity var(--transition),
+    background var(--transition),
+    color var(--transition);
+}
+
+.te-item:hover .te-delete {
+  opacity: 1;
+}
+
+.te-delete:hover {
+  background: rgba(255, 80, 80, 0.15);
+  color: #ff5050;
+}

@@ -1,7 +1,7 @@
 package com.heins.familyplaner.family;
 
-import com.heins.familyplaner.family.dtos.AddFamilyMemberDto;
-import com.heins.familyplaner.family.dtos.AddFamilyRequestDto;
+import com.heins.familyplaner.family.dtos.AddFamilyMemberRequest;
+import com.heins.familyplaner.family.dtos.AddFamilyRequestRequest;
 import com.heins.familyplaner.family.dtos.FamilyDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -33,7 +33,7 @@ public class FamilyController {
     @Operation(summary = "Create a new family")
     @PostMapping
     public FamilyDto addFamily(
-            @RequestBody @NonNull @Valid AddFamilyRequestDto request){
+            @RequestBody @NonNull @Valid AddFamilyRequestRequest request){
         return familyService.addFamily(request.name());
     }
 
@@ -41,9 +41,9 @@ public class FamilyController {
     @Operation(summary = "Add a new member to a family")
     @PostMapping("/members")
     public FamilyDto addPersonToFamily(
-            @RequestBody @NonNull @Valid AddFamilyMemberDto request) {
+            @RequestBody @NonNull @Valid AddFamilyMemberRequest request) {
 
-        return familyService.addFamilyMember(request.familyId(), request.name());
+        return familyService.addFamilyMember(request);
     }
 
 }

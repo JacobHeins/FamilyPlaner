@@ -1,0 +1,31 @@
+# Build artifacts
+
+target/
+ui/node_modules/
+ui/dist/
+
+# Generated static assets (produced by Vite build; copied explicitly in Dockerfile)
+
+src/main/resources/static/
+
+# Version control
+
+.git/
+.gitignore
+
+# IDE / editor
+
+.idea/
+.vscode/
+_.iml
+_.iws
+\*.ipr
+
+# Dev tools
+
+dev-tools/
+
+# Environment files — never bake secrets into the image
+
+.env
+.env.\*
