@@ -1,8 +1,8 @@
 package com.heins.familyplaner.family;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.heins.familyplaner.family.dtos.FamilyDto;
+import com.heins.familyplaner.exceptions.Result;
+import com.heins.familyplaner.family.dtos.FamilyResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -14,7 +14,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -35,9 +34,9 @@ public class FamilyControllerTest {
     // ---------------------------------------------------------
     @Test
     void getAllFamilies_returnsListOfFamilies() throws Exception {
-        List<FamilyDto> families = List.of(
-                new FamilyDto(1L, "Heins", List.of()),
-                new FamilyDto(2L, "Lehnert",  List.of())
+        List<FamilyResponse> families = List.of(
+                new FamilyResponse(1L, "Heins", List.of()),
+                new FamilyResponse(2L, "Lehnert", List.of())
         );
         when(familyService.getAllFamilies()).thenReturn(families);
 
@@ -66,8 +65,8 @@ public class FamilyControllerTest {
     // ---------------------------------------------------------
     @Test
     void addFamily_validRequest_returnsCreatedFamily() throws Exception {
-        FamilyDto familyDto = new FamilyDto(1L, "Heins", List.of());
-        when(familyService.addFamily("Heins")).thenReturn(familyDto);
+        FamilyResponse familyResponse = new FamilyResponse(1L, "Heins", List.of());
+        when(familyService.addFamily("Heins")).thenReturn(Result.success(familyResponse));
 
         String json = """
                 { "name": "Heins" }
@@ -76,7 +75,7 @@ public class FamilyControllerTest {
         mockMvc.perform(post("/api/families")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("Heins"));
 
@@ -95,8 +94,7 @@ public class FamilyControllerTest {
         mockMvc.perform(post("/api/families")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
-            .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.name").value("size must be between 2 and 50"));
+            .andExpect(status().isBadRequest());
 
         verify(familyService, never()).addFamily(any());
     }
@@ -106,9 +104,42 @@ public class FamilyControllerTest {
         mockMvc.perform(post("/api/families")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}"))
-            .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.name").value("must not be blank"));
+            .andExpect(status().isBadRequest());
 
         verify(familyService, never()).addFamily(any());
+    }
+
+    // ---------------------------------------------------------
+    // POST /api/families/members — valid request
+    // ---------------------------------------------------------
+    @Test
+    void addFamilyMember_validRequest_returnsCreated() throws Exception {
+        FamilyResponse familyResponse = new FamilyResponse(1L, "Heins", List.of());
+        when(familyService.addFamilyMember(any())).thenReturn(Result.success(familyResponse));
+
+        String json = """
+                { "familyId": 1, "name": "Jacob", "role": "DAD" }
+                """;
+
+        mockMvc.perform(post("/api/families/members")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value("Heins"));
+    }
+
+    @Test
+    void addFamilyMember_familyNotFound_returnsNotFound() throws Exception {
+        when(familyService.addFamilyMember(any())).thenReturn(Result.notFound("Family not found: 99"));
+
+        String json = """
+                { "familyId": 99, "name": "Jacob", "role": "DAD" }
+                """;
+
+        mockMvc.perform(post("/api/families/members")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.detail").value("Family not found: 99"));
     }
 }

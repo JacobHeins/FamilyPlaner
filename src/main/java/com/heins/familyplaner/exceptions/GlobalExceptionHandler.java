@@ -1,24 +1,38 @@
 package com.heins.familyplaner.exceptions;
 
-import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.net.URI;
+import java.util.stream.Collectors;
 
-@ControllerAdvice
+@Slf4j
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationErrors(
-            MethodArgumentNotValidException ex){
-        Map<String, String> errors = new HashMap<>();
+    public ProblemDetail handleValidationErrors(MethodArgumentNotValidException ex) {
+        String errors = ex.getBindingResult().getFieldErrors().stream()
+                .map(e -> e.getField() + ": " + e.getDefaultMessage())
+                .collect(Collectors.joining(", "));
 
-        ex.getBindingResult().getFieldErrors().forEach( error ->
-                errors.put(error.getField(), error.getDefaultMessage()));
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, errors);
+        problem.setTitle("Validation Failed");
+        problem.setType(URI.create("https://familyplaner.heins.com/errors/validation"));
+        return problem;
+    }
 
-        return ResponseEntity.badRequest().body(errors);
+    @ExceptionHandler(Exception.class)
+    public ProblemDetail handleUnexpected(Exception ex) {
+        log.error("Unexpected error", ex);
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
+                "An unexpected error occurred");
+        problem.setTitle("Internal Server Error");
+        problem.setType(URI.create("https://familyplaner.heins.com/errors/internal"));
+        return problem;
     }
 }
