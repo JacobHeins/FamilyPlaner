@@ -56,26 +56,6 @@
   gap: 8px;
 }
 
-/* Loading */
-.loading-state {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 60px 0;
-  color: var(--text-secondary);
-  font-size: 15px;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-.spin {
-  animation: spin 1s linear infinite;
-}
-
 /* Family section */
 .family-section {
   display: flex;
@@ -83,25 +63,106 @@
   gap: 14px;
 }
 
+.family-section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
 .family-section-title {
   font-size: 18px;
   font-weight: 700;
   color: var(--text-primary);
-  padding-bottom: 6px;
-  border-bottom: 1px solid var(--border);
+  flex: 1;
+}
+
+.family-rename-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  transition:
+    background var(--transition),
+    color var(--transition);
+}
+.family-rename-btn:hover {
+  background: var(--bg-hover);
+  color: var(--accent);
+}
+
+.family-rename-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.family-rename-input {
+  flex: 1;
+  padding: 5px 8px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.rename-action {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background var(--transition);
+}
+.rename-confirm {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.rename-confirm:hover {
+  background: var(--accent);
+  color: #fff;
+}
+.rename-cancel {
+  background: var(--bg-hover);
+  color: var(--text-secondary);
+}
+.rename-cancel:hover {
+  background: rgba(255, 80, 80, 0.15);
+  color: #ff5050;
+}
+
+/* Error dismiss button */
+.error-dismiss {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  border-radius: 4px;
+  color: inherit;
+  opacity: 0.7;
+}
+.error-dismiss:hover {
+  opacity: 1;
+}
+
+/* Header actions */
+.fm-header-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
 .empty-family {
   color: var(--text-muted);
   font-size: 14px;
   margin: 0;
-}
-
-.empty-state {
-  text-align: center;
-  padding: 60px 0;
-  color: var(--text-secondary);
-  font-size: 15px;
 }
 
 .members-grid {

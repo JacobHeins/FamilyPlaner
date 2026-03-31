@@ -1,98 +1,106 @@
-import { useState, useEffect } from "react";
-import { Plus, User, Loader2, AlertCircle } from "lucide-react";
+import { useState } from "react";
 import {
-  getFamilies,
-  createFamily,
-  addFamilyMember,
+  Plus,
+  User,
+  Loader2,
+  AlertCircle,
+  Pencil,
+  Check,
+  X,
+} from "lucide-react";
+import {
+  useGetFamiliesQuery,
+  useCreateFamilyMutation,
+  useUpdateFamilyMutation,
+  useAddFamilyMemberMutation,
   roleColor,
   roleLabel,
-  type Family,
-  type FamilyRole,
 } from "../api/familyApi";
+import type { FamilyRole } from "../api/familyApi";
 import "./FamilyMembers.css";
 
 const ROLES: FamilyRole[] = ["DAD", "MOM", "CHILD"];
 
 export default function FamilyMembers() {
-  const [families, setFamilies] = useState<Family[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: families = [], isLoading, isError } = useGetFamiliesQuery();
+
+  const [createFamily, { isLoading: creating }] = useCreateFamilyMutation();
+  const [updateFamily, { isLoading: renaming }] = useUpdateFamilyMutation();
+  const [addMember, { isLoading: addingMember }] = useAddFamilyMemberMutation();
+
   const [showMemberForm, setShowMemberForm] = useState(false);
   const [showFamilyForm, setShowFamilyForm] = useState(false);
+  const [renamingFamilyId, setRenamingFamilyId] = useState<number | null>(null);
+  const [renameValue, setRenameValue] = useState("");
+
   const [memberForm, setMemberForm] = useState<{
     name: string;
     role: FamilyRole;
     familyId: number | "";
-  }>({
-    name: "",
-    role: "CHILD",
-    familyId: "",
-  });
+  }>({ name: "", role: "CHILD", familyId: "" });
   const [familyName, setFamilyName] = useState("");
-  const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
-  useEffect(() => {
-    load();
-  }, []);
+  const allMembersCount = families.reduce(
+    (acc, f) => acc + f.familyMembers.length,
+    0,
+  );
 
-  async function load() {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await getFamilies();
-      setFamilies(data);
-      if (data.length > 0 && memberForm.familyId === "") {
-        setMemberForm((f) => ({ ...f, familyId: data[0].id }));
-      }
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Unknown error");
-    } finally {
-      setLoading(false);
-    }
+  function startRename(id: number, currentName: string) {
+    setRenamingFamilyId(id);
+    setRenameValue(currentName);
   }
 
-  async function submitMember() {
-    if (!memberForm.name.trim() || !memberForm.familyId) return;
+  function cancelRename() {
+    setRenamingFamilyId(null);
+    setRenameValue("");
+  }
+
+  async function submitRename(id: number) {
+    if (!renameValue.trim()) return;
+    setFormError(null);
     try {
-      setSaving(true);
-      const updated = await addFamilyMember(
-        Number(memberForm.familyId),
-        memberForm.name.trim(),
-        memberForm.role,
-      );
-      setFamilies((prev) =>
-        prev.map((f) => (f.id === updated.id ? updated : f)),
-      );
-      setShowMemberForm(false);
-      setMemberForm((f) => ({ ...f, name: "" }));
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to add member");
-    } finally {
-      setSaving(false);
+      await updateFamily({ id, name: renameValue.trim() }).unwrap();
+      setRenamingFamilyId(null);
+      setRenameValue("");
+    } catch {
+      setFormError("Failed to rename family.");
     }
   }
 
   async function submitFamily() {
     if (!familyName.trim()) return;
+    setFormError(null);
     try {
-      setSaving(true);
-      const created = await createFamily(familyName.trim());
-      setFamilies((prev) => [...prev, created]);
+      const created = await createFamily({ name: familyName.trim() }).unwrap();
       setMemberForm((f) => ({ ...f, familyId: created.id }));
       setShowFamilyForm(false);
       setFamilyName("");
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to create family");
-    } finally {
-      setSaving(false);
+    } catch {
+      setFormError("Failed to create family.");
     }
   }
 
-  const allMembers = families.flatMap((f) =>
-    f.familyMembers.map((m) => ({ ...m, familyName: f.name })),
-  );
+  async function submitMember() {
+    const familyId =
+      memberForm.familyId !== ""
+        ? Number(memberForm.familyId)
+        : families[0]?.id;
+    if (!memberForm.name.trim() || !familyId) return;
+    setFormError(null);
+    try {
+      await addMember({
+        familyId,
+        name: memberForm.name.trim(),
+        role: memberForm.role,
+      }).unwrap();
+      setShowMemberForm(false);
+      setMemberForm((f) => ({ ...f, name: "" }));
+    } catch {
+      setFormError("Failed to add member.");
+    }
+  }
 
-  // Assign child-index per family for color cycling
   function getMemberColor(
     familyId: number,
     memberId: number,
@@ -111,12 +119,12 @@ export default function FamilyMembers() {
         <div>
           <h1 className="page-title">Family Members</h1>
           <p className="page-subtitle">
-            {loading
+            {isLoading
               ? "Loading…"
-              : `${allMembers.length} member${allMembers.length !== 1 ? "s" : ""} across ${families.length} family`}
+              : `${allMembersCount} member${allMembersCount !== 1 ? "s" : ""} across ${families.length} family`}
           </p>
         </div>
-        <div style={{ display: "flex", gap: "10px" }}>
+        <div className="fm-header-actions">
           <button
             className="btn-secondary"
             onClick={() => setShowFamilyForm((s) => !s)}
@@ -125,7 +133,13 @@ export default function FamilyMembers() {
           </button>
           <button
             className="btn-primary"
-            onClick={() => setShowMemberForm((s) => !s)}
+            onClick={() => {
+              setMemberForm((f) => ({
+                ...f,
+                familyId: families[0]?.id ?? "",
+              }));
+              setShowMemberForm((s) => !s);
+            }}
             disabled={families.length === 0}
           >
             <Plus size={16} /> Add Member
@@ -133,12 +147,12 @@ export default function FamilyMembers() {
         </div>
       </header>
 
-      {error && (
-        <div className="error-banner">
+      {formError && (
+        <div className="error-state">
           <AlertCircle size={16} />
-          {error}
-          <button className="error-retry" onClick={load}>
-            Retry
+          {formError}
+          <button className="error-dismiss" onClick={() => setFormError(null)}>
+            <X size={14} />
           </button>
         </div>
       )}
@@ -163,9 +177,9 @@ export default function FamilyMembers() {
             <button
               className="add-submit"
               onClick={submitFamily}
-              disabled={saving}
+              disabled={creating}
             >
-              {saving ? "Creating…" : "Create"}
+              {creating ? "Creating…" : "Create"}
             </button>
           </div>
         </div>
@@ -229,23 +243,74 @@ export default function FamilyMembers() {
             <button
               className="add-submit"
               onClick={submitMember}
-              disabled={saving}
+              disabled={addingMember}
             >
-              {saving ? "Adding…" : "Add"}
+              {addingMember ? "Adding…" : "Add"}
             </button>
           </div>
         </div>
       )}
 
-      {loading ? (
+      {isLoading ? (
         <div className="loading-state">
           <Loader2 size={28} className="spin" />
           <span>Loading members…</span>
         </div>
+      ) : isError ? (
+        <div className="error-state">
+          <AlertCircle size={18} />
+          Could not load family data. Please refresh the page.
+        </div>
+      ) : families.length === 0 ? (
+        <div className="empty-state">
+          No families yet — create one above to get started!
+        </div>
       ) : (
         families.map((family) => (
           <div key={family.id} className="family-section">
-            <div className="family-section-title">{family.name}</div>
+            <div className="family-section-header">
+              {renamingFamilyId === family.id ? (
+                <div className="family-rename-row">
+                  <input
+                    className="fm-input family-rename-input"
+                    value={renameValue}
+                    onChange={(e) => setRenameValue(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") submitRename(family.id);
+                      if (e.key === "Escape") cancelRename();
+                    }}
+                    autoFocus
+                  />
+                  <button
+                    className="rename-action rename-confirm"
+                    onClick={() => submitRename(family.id)}
+                    disabled={renaming}
+                    title="Confirm"
+                  >
+                    <Check size={14} />
+                  </button>
+                  <button
+                    className="rename-action rename-cancel"
+                    onClick={cancelRename}
+                    title="Cancel"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <span className="family-section-title">{family.name}</span>
+                  <button
+                    className="family-rename-btn"
+                    onClick={() => startRename(family.id, family.name)}
+                    title="Rename family"
+                  >
+                    <Pencil size={13} />
+                    Rename
+                  </button>
+                </>
+              )}
+            </div>
             <div className="members-grid">
               {family.familyMembers.map((m) => {
                 const color = getMemberColor(family.id, m.id, m.role);
@@ -273,12 +338,6 @@ export default function FamilyMembers() {
             </div>
           </div>
         ))
-      )}
-
-      {!loading && families.length === 0 && !error && (
-        <div className="empty-state">
-          <p>No families found. Create your first family above!</p>
-        </div>
       )}
     </div>
   );

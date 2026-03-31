@@ -67,13 +67,13 @@ description: "Task list for Family Dashboard UI implementation"
 
 ### Implementation for User Story 2
 
-- [ ] T018 [P] [US2] Restructure the family management page for viewing, renaming, and member creation workflows in `ui/src/pages/FamilyMembers.tsx`
-- [ ] T019 [P] [US2] Update family management styling to preserve the current visual language while improving responsiveness in `ui/src/pages/FamilyMembers.css`
-- [ ] T020 [US2] Implement family create and rename mutations with the current backend request shapes in `ui/src/api/familyApi.ts` and `ui/src/pages/FamilyMembers.tsx`
-- [ ] T021 [US2] Implement add-member flow with backend-backed role selection in `ui/src/api/familyApi.ts` and `ui/src/pages/FamilyMembers.tsx`
-- [ ] T022 [US2] Present member roles as view-only data and remove unsupported role-edit affordances in `ui/src/pages/FamilyMembers.tsx`
-- [ ] T023 [US2] Add loading, validation, empty, and error handling for family workflows in `ui/src/pages/FamilyMembers.tsx` and `ui/src/pages/FamilyMembers.css`
-- [ ] T024 [US2] Validate family management workflows with `npm run build` in `ui/package.json`
+- [x] T018 [P] [US2] Restructure the family management page for viewing, renaming, and member creation workflows in `ui/src/pages/FamilyMembers.tsx`
+- [x] T019 [P] [US2] Update family management styling to preserve the current visual language while improving responsiveness in `ui/src/pages/FamilyMembers.css`
+- [x] T020 [US2] Implement family create and rename mutations with the current backend request shapes in `ui/src/api/familyApi.ts` and `ui/src/pages/FamilyMembers.tsx`
+- [x] T021 [US2] Implement add-member flow with backend-backed role selection in `ui/src/api/familyApi.ts` and `ui/src/pages/FamilyMembers.tsx`
+- [x] T022 [US2] Present member roles as view-only data and remove unsupported role-edit affordances in `ui/src/pages/FamilyMembers.tsx`
+- [x] T023 [US2] Add loading, validation, empty, and error handling for family workflows in `ui/src/pages/FamilyMembers.tsx` and `ui/src/pages/FamilyMembers.css`
+- [x] T024 [US2] Validate family management workflows with `npm run build` in `ui/package.json`
 
 **Checkpoint**: User Stories 1 and 2 are complete when the dashboard and family management flows both work independently.
 
