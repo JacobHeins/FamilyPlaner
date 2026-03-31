@@ -1,40 +1,26 @@
 {
-  "name": "FamilyPlaner",
+  "name": "FamilyPlaner UI",
   "dockerComposeFile": "docker-compose.yml",
-  "service": "app",
+  "service": "ui",
   "workspaceFolder": "/workspace",
-  "features": {
-    "ghcr.io/devcontainers/features/java:1": {
-      "version": "25",
-      "jdkDistro": "tem"
-    },
-    "ghcr.io/devcontainers/features/node:1": {
-      "version": "22"
-    }
-  },
-  "forwardPorts": [8080, 5173],
+  "forwardPorts": [5173],
   "portsAttributes": {
-    "8080": { "label": "Spring Boot API" },
     "5173": { "label": "Vite Dev Server" }
   },
-  "postCreateCommand": "cd ui && npm install",
+  "postCreateCommand": "curl -LsSf https://astral.sh/uv/install.sh | sh && $HOME/.local/bin/uv tool install specify-cli --from git+https://github.com/github/spec-kit.git && $HOME/.local/bin/specify init --here --ai copilot --force && cd ui && npm install",
+  "remoteEnv": {
+    "PATH": "${containerEnv:PATH}:/home/node/.local/bin"
+  },
   "customizations": {
     "vscode": {
       "extensions": [
-        "vscjava.vscode-java-pack",
-        "vmware.vscode-spring-boot",
-        "vscjava.vscode-spring-boot-dashboard",
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
         "bradlc.vscode-tailwindcss"
       ],
       "settings": {
         "editor.formatOnSave": true,
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "[java]": {
-          "editor.defaultFormatter": "redhat.java"
-        },
-        "java.configuration.detectJdksAtStart": true
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
       }
     }
   }
