@@ -4,6 +4,7 @@ import com.heins.familyplaner.exceptions.Result;
 import com.heins.familyplaner.family.dtos.AddFamilyMemberRequest;
 import com.heins.familyplaner.family.dtos.AddFamilyRequestRequest;
 import com.heins.familyplaner.family.dtos.FamilyResponse;
+import com.heins.familyplaner.family.dtos.UpdateFamilyRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -43,11 +44,23 @@ public class FamilyController {
         };
     }
 
+    @Operation(summary = "Update a family e.g. rename it")
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateFamily(
+            @PathVariable Long id,
+            @RequestBody @NonNull @Valid UpdateFamilyRequest request) {
+        return switch ( familyService.updateFamily(id, request)) {
+            case Result.Success<FamilyResponse> s -> ResponseEntity.status(HttpStatus.CREATED).body(s.value());
+            case Result.Failure<FamilyResponse> f -> ResponseEntity.of(f.toProblemDetail()).build();
+        };
+    }
+
     @Operation(summary = "Add a new member to a family")
-    @PostMapping("/members")
+    @PostMapping("/{id}/members")
     public ResponseEntity<?> addPersonToFamily(
+            @PathVariable Long id,
             @RequestBody @NonNull @Valid AddFamilyMemberRequest request) {
-        return switch (familyService.addFamilyMember(request)) {
+        return switch (familyService.addFamilyMember(id, request)) {
             case Result.Success<FamilyResponse> s -> ResponseEntity.status(HttpStatus.CREATED).body(s.value());
             case Result.Failure<FamilyResponse> f -> ResponseEntity.of(f.toProblemDetail()).build();
         };

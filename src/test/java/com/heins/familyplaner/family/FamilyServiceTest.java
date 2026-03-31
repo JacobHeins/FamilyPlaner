@@ -4,6 +4,7 @@ import com.heins.familyplaner.exceptions.Result;
 import com.heins.familyplaner.family.dtos.AddFamilyMemberRequest;
 import com.heins.familyplaner.family.dtos.FamilyResponse;
 import com.heins.familyplaner.family.dtos.FamilyRoleDto;
+import com.heins.familyplaner.family.dtos.UpdateFamilyRequest;
 import com.heins.familyplaner.family.entities.Family;
 import com.heins.familyplaner.family.entities.FamilyMember;
 import com.heins.familyplaner.family.mapper.FamilyMapper;
@@ -22,8 +23,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class FamilyServiceTest {
@@ -81,6 +81,34 @@ public class FamilyServiceTest {
         verify(familyRepository).findAll();
     }
 
+    //-------------updateFamily---------
+    @Test
+    void updateFamily_updatesNameAndReturnsDto() {
+        Family existing = new Family("Heins");
+        ReflectionTestUtils.setField(existing, "id", 1L);
+        when(familyRepository.findById(1L)).thenReturn(Optional.of(existing));
+        when(familyRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+        UpdateFamilyRequest request = new UpdateFamilyRequest("Heins Family");
+        Result<FamilyResponse> result = familyService.updateFamily(1L, request);
+
+        assertInstanceOf(Result.Success.class, result);
+        FamilyResponse response = ((Result.Success<FamilyResponse>) result).value();
+        assertEquals("Heins Family", response.name());
+        verify(familyRepository).save(existing);
+    }
+
+    @Test
+    void updateFamily_returnsNotFound_whenFamilyMissing() {
+        when(familyRepository.findById(99L)).thenReturn(Optional.empty());
+
+        UpdateFamilyRequest request = new UpdateFamilyRequest("Ghost Family");
+        Result<FamilyResponse> result = familyService.updateFamily(99L, request);
+
+        assertInstanceOf(Result.Failure.class, result);
+        verify(familyRepository, never()).save(any());
+    }
+
     //----------------addFamilyMembers-----------
     @Test
     void addFamilyMember_addsFamilyMemberAndSavesFamily() {
@@ -90,8 +118,8 @@ public class FamilyServiceTest {
         when(familyMemberRepository.save(any())).thenAnswer(i -> i.getArgument(0));
         when(familyRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
-        AddFamilyMemberRequest request = new AddFamilyMemberRequest(1L, "Jacob", FamilyRoleDto.DAD);
-        Result<FamilyResponse> result = familyService.addFamilyMember(request);
+        AddFamilyMemberRequest request = new AddFamilyMemberRequest("Jacob", FamilyRoleDto.DAD);
+        Result<FamilyResponse> result = familyService.addFamilyMember(1L, request);
 
         assertInstanceOf(Result.Success.class, result);
         FamilyResponse response = ((Result.Success<FamilyResponse>) result).value();
@@ -108,12 +136,12 @@ public class FamilyServiceTest {
     void addFamilyMember_returnsNotFound_whenFamilyMissing() {
         when(familyRepository.findById(123L)).thenReturn(Optional.empty());
 
-        AddFamilyMemberRequest request = new AddFamilyMemberRequest(123L, "Jacob", FamilyRoleDto.DAD);
-        Result<FamilyResponse> result = familyService.addFamilyMember(request);
+        AddFamilyMemberRequest request = new AddFamilyMemberRequest("Jacob", FamilyRoleDto.DAD);
+        Result<FamilyResponse> result = familyService.addFamilyMember(123L, request);
 
         assertInstanceOf(Result.Failure.class, result);
         Result.Failure<FamilyResponse> failure = (Result.Failure<FamilyResponse>) result;
         assertEquals(Result.ErrorType.NOT_FOUND, failure.errorType());
-        assertEquals("Family not found: 123", failure.error());
+        assertEquals("Family not found with id: 123", failure.error());
     }
 }

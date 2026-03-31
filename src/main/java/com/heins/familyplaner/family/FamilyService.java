@@ -3,6 +3,7 @@ package com.heins.familyplaner.family;
 import com.heins.familyplaner.exceptions.Result;
 import com.heins.familyplaner.family.dtos.AddFamilyMemberRequest;
 import com.heins.familyplaner.family.dtos.FamilyResponse;
+import com.heins.familyplaner.family.dtos.UpdateFamilyRequest;
 import com.heins.familyplaner.family.entities.Family;
 import com.heins.familyplaner.family.entities.FamilyMember;
 import com.heins.familyplaner.family.mapper.FamilyMapper;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -35,6 +37,19 @@ public class FamilyService {
         return Result.success(familyMapper.toFamilyResponse(newFamily));
     }
 
+    public Result<FamilyResponse> updateFamily(Long familyId, UpdateFamilyRequest request) {
+        log.debug("Updating family {} with values {}", familyId, request);
+        Optional<Family> oldFamilyOpt = familyRepository.findById(familyId);
+        if (oldFamilyOpt.isEmpty()) {
+            log.warn("Family not found with id: {}", familyId);
+            return Result.notFound("Family not found with id: " + familyId);
+        }
+        Family oldFamily = oldFamilyOpt.get();
+        oldFamily.setName(request.name());
+        Family newFamily = familyRepository.save(oldFamily);
+        return Result.success(familyMapper.toFamilyResponse(newFamily));
+    }
+
     public List<FamilyResponse> getAllFamilies() {
         log.debug("Fetching all families");
         return familyRepository
@@ -45,12 +60,12 @@ public class FamilyService {
     }
 
     @Transactional
-    public Result<FamilyResponse> addFamilyMember(AddFamilyMemberRequest request) {
-        log.debug("Adding member '{}' to familyId: {}", request.name(), request.familyId());
-        var familyOpt = familyRepository.findById(request.familyId());
+    public Result<FamilyResponse> addFamilyMember(Long familyId, AddFamilyMemberRequest request) {
+        log.debug("Adding member '{}' to familyId: {}", request.name(), familyId);
+        var familyOpt = familyRepository.findById(familyId);
         if (familyOpt.isEmpty()) {
-            log.warn("Family not found: {}", request.familyId());
-            return Result.notFound("Family not found: " + request.familyId());
+            log.warn("Family not found with id: {}", familyId);
+            return Result.notFound("Family not found with id: " + familyId);
         }
         Family family = familyOpt.get();
         FamilyMember familyMember = new FamilyMember(request.name(), familyRoleMapper.toDomain(request.role()));

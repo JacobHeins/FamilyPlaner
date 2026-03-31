@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(FamilyController.class)
@@ -110,18 +111,69 @@ public class FamilyControllerTest {
     }
 
     // ---------------------------------------------------------
+    // PUT /api/families — valid request
+    // ---------------------------------------------------------
+    @Test
+    void updateFamily_validRequest_returnsUpdatedFamily() throws Exception {
+        FamilyResponse familyResponse = new FamilyResponse(1L, "Heins Family", List.of());
+        when(familyService.updateFamily(any(), any())).thenReturn(Result.success(familyResponse));
+
+        String json = """
+                { "name": "Heins Family" }
+                """;
+
+        mockMvc.perform(put("/api/families/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Heins Family"));
+
+        verify(familyService).updateFamily(any(), any());
+    }
+
+    @Test
+    void updateFamily_familyNotFound_returnsNotFound() throws Exception {
+        when(familyService.updateFamily(any(), any())).thenReturn(Result.notFound("Family not found with id: 99"));
+
+        String json = """
+                { "name": "Missing Family" }
+                """;
+
+        mockMvc.perform(put("/api/families/99")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.detail").value("Family not found with id: 99"));
+    }
+
+    @Test
+    void updateFamily_shortName_returnsBadRequest() throws Exception {
+        String json = """
+                { "name": "H" }
+                """;
+
+        mockMvc.perform(put("/api/families/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andExpect(status().isBadRequest());
+
+        verify(familyService, never()).updateFamily(any(), any());
+    }
+
+    // ---------------------------------------------------------
     // POST /api/families/members — valid request
     // ---------------------------------------------------------
     @Test
     void addFamilyMember_validRequest_returnsCreated() throws Exception {
         FamilyResponse familyResponse = new FamilyResponse(1L, "Heins", List.of());
-        when(familyService.addFamilyMember(any())).thenReturn(Result.success(familyResponse));
+        when(familyService.addFamilyMember(any(), any())).thenReturn(Result.success(familyResponse));
 
         String json = """
-                { "familyId": 1, "name": "Jacob", "role": "DAD" }
+                { "name": "Jacob", "role": "DAD" }
                 """;
 
-        mockMvc.perform(post("/api/families/members")
+        mockMvc.perform(post("/api/families/1/members")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andExpect(status().isCreated())
@@ -130,16 +182,16 @@ public class FamilyControllerTest {
 
     @Test
     void addFamilyMember_familyNotFound_returnsNotFound() throws Exception {
-        when(familyService.addFamilyMember(any())).thenReturn(Result.notFound("Family not found: 99"));
+        when(familyService.addFamilyMember(any(), any())).thenReturn(Result.notFound("Family not found with id: 99"));
 
         String json = """
-                { "familyId": 99, "name": "Jacob", "role": "DAD" }
+                { "name": "Jacob", "role": "DAD" }
                 """;
 
-        mockMvc.perform(post("/api/families/members")
+        mockMvc.perform(post("/api/families/99/members")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.detail").value("Family not found: 99"));
+                .andExpect(jsonPath("$.detail").value("Family not found with id: 99"));
     }
 }
