@@ -1,7 +1,8 @@
 package com.heins.familyplaner.family;
 
+import com.heins.familyplaner.exceptions.Result;
 import com.heins.familyplaner.family.dtos.AddFamilyMemberRequest;
-import com.heins.familyplaner.family.dtos.FamilyDto;
+import com.heins.familyplaner.family.dtos.FamilyResponse;
 import com.heins.familyplaner.family.entities.Family;
 import com.heins.familyplaner.family.entities.FamilyMember;
 import com.heins.familyplaner.family.mapper.FamilyMapper;
@@ -9,12 +10,16 @@ import com.heins.familyplaner.family.mapper.FamilyRoleMapper;
 import com.heins.familyplaner.family.repositories.FamilyRepository;
 import com.heins.familyplaner.family.repositories.FamilyMemberRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class FamilyService {
 
     private final FamilyRepository familyRepository;
@@ -22,48 +27,37 @@ public class FamilyService {
     private final FamilyMapper familyMapper;
     private final FamilyRoleMapper familyRoleMapper;
 
-
-    public FamilyDto addFamily(String name) {
+    @Transactional
+    public Result<FamilyResponse> addFamily(String name) {
+        log.debug("Creating family with name: {}", name);
         Family newFamily = familyRepository.save(new Family(name));
-        return familyMapper.toDto(newFamily);
+        log.info("Family created with id: {}", newFamily.getId());
+        return Result.success(familyMapper.toFamilyResponse(newFamily));
     }
 
-    public List<FamilyDto> getAllFamilies() {
+    public List<FamilyResponse> getAllFamilies() {
+        log.debug("Fetching all families");
         return familyRepository
                 .findAll()
                 .stream()
-                .map(familyMapper::toDto)
+                .map(familyMapper::toFamilyResponse)
                 .toList();
     }
 
-    public FamilyDto getFamilyById(Long id) {
-        Family family = familyRepository
-                .findById(id)
-                .orElseThrow(() -> new RuntimeException("Family not found: " + id));
-
-        return familyMapper.toDto(family);
-    }
-
-    private Family getFamily(long id) {
-        return familyRepository
-                .findById(id)
-                .orElseThrow(() -> new RuntimeException("Family not found: " + id));
-    }
-
-    public FamilyDto getFamilyByName(String name) {
-        Family family = familyRepository
-                .findByName(name)
-                .orElseThrow(()-> new RuntimeException("Family not found: " + name));
-        return familyMapper.toDto(family);
-    }
-
-    public FamilyDto addFamilyMember(AddFamilyMemberRequest request) {
-        Family family = getFamily(request.familyId());
+    @Transactional
+    public Result<FamilyResponse> addFamilyMember(AddFamilyMemberRequest request) {
+        log.debug("Adding member '{}' to familyId: {}", request.name(), request.familyId());
+        var familyOpt = familyRepository.findById(request.familyId());
+        if (familyOpt.isEmpty()) {
+            log.warn("Family not found: {}", request.familyId());
+            return Result.notFound("Family not found: " + request.familyId());
+        }
+        Family family = familyOpt.get();
         FamilyMember familyMember = new FamilyMember(request.name(), familyRoleMapper.toDomain(request.role()));
         family.addMember(familyMember);
         familyMemberRepository.save(familyMember);
-        family =  familyRepository.save(family);
-        return familyMapper.toDto(family);
+        family = familyRepository.save(family);
+        log.info("Member added to familyId: {}", family.getId());
+        return Result.success(familyMapper.toFamilyResponse(family));
     }
-
 }
