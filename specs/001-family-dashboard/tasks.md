@@ -47,13 +47,13 @@ description: "Task list for Family Dashboard UI implementation"
 
 ### Implementation for User Story 1
 
-- [ ] T011 [P] [US1] Restructure the dashboard page layout for summary and weekly todo sections in `ui/src/pages/Dashboard.tsx`
-- [ ] T012 [P] [US1] Redesign the dashboard styling for responsive cards and weekly todo presentation in `ui/src/pages/Dashboard.css`
-- [ ] T013 [US1] Wire family and todo queries into the dashboard in `ui/src/pages/Dashboard.tsx`
-- [ ] T014 [US1] Implement current-week todo grouping and summary derivation in `ui/src/pages/Dashboard.tsx`
-- [ ] T015 [US1] Add loading, empty, and error states for the dashboard in `ui/src/pages/Dashboard.tsx` and `ui/src/pages/Dashboard.css`
-- [ ] T016 [US1] Align dashboard navigation entry points with the new layout in `ui/src/components/Sidebar.tsx` and `ui/src/pages/Dashboard.tsx`
-- [ ] T017 [US1] Validate the dashboard MVP with `npm run build` in `ui/package.json`
+- [x] T011 [P] [US1] Restructure the dashboard page layout for summary and weekly todo sections in `ui/src/pages/Dashboard.tsx`
+- [x] T012 [P] [US1] Redesign the dashboard styling for responsive cards and weekly todo presentation in `ui/src/pages/Dashboard.css`
+- [x] T013 [US1] Wire family and todo queries into the dashboard in `ui/src/pages/Dashboard.tsx`
+- [x] T014 [US1] Implement current-week todo grouping and summary derivation in `ui/src/pages/Dashboard.tsx`
+- [x] T015 [US1] Add loading, empty, and error states for the dashboard in `ui/src/pages/Dashboard.tsx` and `ui/src/pages/Dashboard.css`
+- [x] T016 [US1] Align dashboard navigation entry points with the new layout in `ui/src/components/Sidebar.tsx` and `ui/src/pages/Dashboard.tsx`
+- [x] T017 [US1] Validate the dashboard MVP with `npm run build` in `ui/package.json`
 
 **Checkpoint**: User Story 1 is complete when the dashboard alone provides a usable weekly overview.
 

@@ -1,6 +1,4 @@
 .page {
-  padding: 32px;
-  max-width: 1200px;
   display: flex;
   flex-direction: column;
   gap: 28px;
@@ -60,13 +58,13 @@
   padding: 8px 0;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+/* Empty state link */
+.empty-link {
+  color: var(--accent);
+  text-decoration: underline;
 }
-.spin {
-  animation: spin 1s linear infinite;
+.empty-link:hover {
+  color: var(--accent-hover);
 }
 
 /* Member pills */
