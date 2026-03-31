@@ -1,6 +1,11 @@
 /* App shell */
 .app-shell {
-  display: flex;
-  height: 100vh;
-  overflow: hidden;
+  position: relative;
+}
+
+.page {
+  width: 100%;
+  max-width: var(--page-max-width);
+  margin: 0 auto;
+  padding: var(--page-padding);
 }

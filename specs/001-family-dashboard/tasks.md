@@ -27,13 +27,13 @@ description: "Task list for Family Dashboard UI implementation"
 
 **⚠️ CRITICAL**: No user story work should begin until this phase is complete.
 
-- [ ] T004 Create a shared RTK Query base API in `ui/src/api/baseApi.ts`
-- [ ] T005 [P] Refactor family endpoints to match the current backend contract in `ui/src/api/familyApi.ts`
-- [ ] T006 [P] Create todo RTK Query endpoints aligned to the current backend contract in `ui/src/api/todoApi.ts`
-- [ ] T007 Define shared frontend types and selectors for family and todo data in `ui/src/app/store/types.ts`
-- [ ] T008 Update route composition for the dashboard, family, and todo surfaces in `ui/src/App.tsx`
-- [ ] T009 [P] Restructure the shared shell for responsive navigation in `ui/src/components/Layout.tsx`, `ui/src/components/Sidebar.tsx`, `ui/src/components/Layout.css`, and `ui/src/components/Sidebar.css`
-- [ ] T010 Establish shared loading, empty, and error-state styling tokens in `ui/src/index.css` and `ui/src/App.css`
+- [x] T004 Create a shared RTK Query base API in `ui/src/api/baseApi.ts`
+- [x] T005 [P] Refactor family endpoints to match the current backend contract in `ui/src/api/familyApi.ts`
+- [x] T006 [P] Create todo RTK Query endpoints aligned to the current backend contract in `ui/src/api/todoApi.ts`
+- [x] T007 Define shared frontend types and selectors for family and todo data in `ui/src/app/store/types.ts`
+- [x] T008 Update route composition for the dashboard, family, and todo surfaces in `ui/src/App.tsx`
+- [x] T009 [P] Restructure the shared shell for responsive navigation in `ui/src/components/Layout.tsx`, `ui/src/components/Sidebar.tsx`, `ui/src/components/Layout.css`, and `ui/src/components/Sidebar.css`
+- [x] T010 Establish shared loading, empty, and error-state styling tokens in `ui/src/index.css` and `ui/src/App.css`
 
 **Checkpoint**: Foundation ready. User stories can now be implemented independently.
 
