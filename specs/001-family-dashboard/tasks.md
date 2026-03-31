@@ -15,9 +15,9 @@ description: "Task list for Family Dashboard UI implementation"
 
 **Purpose**: Prepare the frontend workspace for Redux Toolkit based implementation and route restructuring.
 
-- [ ] T001 Add Redux Toolkit and React Redux dependencies in `ui/package.json`
-- [ ] T002 Create application store scaffolding in `ui/src/app/store/store.ts` and `ui/src/app/store/hooks.ts`
-- [ ] T003 [P] Wrap the SPA with the Redux provider in `ui/src/main.tsx`
+- [x] T001 Add Redux Toolkit and React Redux dependencies in `ui/package.json`
+- [x] T002 Create application store scaffolding in `ui/src/app/store/store.ts` and `ui/src/app/store/hooks.ts`
+- [x] T003 [P] Wrap the SPA with the Redux provider in `ui/src/main.tsx`
 
 ---
 
