@@ -37,6 +37,7 @@ public class FamilyService {
         return Result.success(familyMapper.toFamilyResponse(newFamily));
     }
 
+    @Transactional
     public Result<FamilyResponse> updateFamily(Long familyId, UpdateFamilyRequest request) {
         log.debug("Updating family {} with values {}", familyId, request);
         Optional<Family> oldFamilyOpt = familyRepository.findById(familyId);
