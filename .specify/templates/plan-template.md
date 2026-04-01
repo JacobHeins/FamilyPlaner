@@ -38,6 +38,8 @@ _GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 - Existing backend API contracts are reused; any gaps are documented as blockers or follow-up
   work instead of assumed backend changes.
 - Loading, empty, success, and error states are defined for all user-visible flows.
+- All user-facing text (labels, buttons, placeholders, empty states, error messages, aria-labels)
+  is written in German (Principle VI).
 - Verification includes `npm run build` in `ui/`, plus any additional tests required by the
   feature specification.
 
