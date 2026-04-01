@@ -16,14 +16,14 @@ export default function Layout() {
             type="button"
             className="sidebar-toggle"
             onClick={() => setIsSidebarOpen(true)}
-            aria-label="Open navigation"
+            aria-label="Navigation öffnen"
           >
             <Menu size={18} />
           </button>
           <div className="app-topbar-copy">
             <span className="app-topbar-title">FamilyPlaner</span>
             <span className="app-topbar-subtitle">
-              Dashboard, family, and tasks
+              Übersicht, Familie und Aufgaben
             </span>
           </div>
         </div>

@@ -104,12 +104,15 @@ description: "Task list for Family Dashboard UI implementation"
 
 ## Phase 6: Polish & Cross-Cutting Concerns
 
-**Purpose**: Finalize shared UX quality, responsive behavior, and feature documentation alignment.
+**Purpose**: Finalize shared UX quality, responsive behavior, German-language localisation, assignee visibility, and feature documentation alignment.
 
-- [ ] T032 [P] Remove or clearly de-emphasize deferred planner surface entry points in `ui/src/App.tsx` and `ui/src/components/Sidebar.tsx`
-- [ ] T033 [P] Harmonize shared responsive spacing and dark-theme styling across `ui/src/index.css`, `ui/src/components/Layout.css`, and `ui/src/components/Sidebar.css`
-- [ ] T034 Review route and page ergonomics across `ui/src/pages/Dashboard.tsx`, `ui/src/pages/FamilyMembers.tsx`, and `ui/src/pages/Tasks.tsx`
-- [ ] T035 Run quickstart validation against `specs/001-family-dashboard/quickstart.md`
+- [x] T032 [P] Remove or clearly de-emphasize deferred planner surface entry points in `ui/src/App.tsx` and `ui/src/components/Sidebar.tsx`
+- [x] T033 [P] Harmonize shared responsive spacing and dark-theme styling across `ui/src/index.css`, `ui/src/components/Layout.css`, and `ui/src/components/Sidebar.css`
+- [x] T034 Review route and page ergonomics across `ui/src/pages/Dashboard.tsx`, `ui/src/pages/FamilyMembers.tsx`, and `ui/src/pages/Tasks.tsx`
+- [x] T035 Run quickstart validation against `specs/001-family-dashboard/quickstart.md`
+- [x] T039 [P] Translate all user-facing labels, button captions, placeholder text, navigation items, empty states, and error messages to German across `ui/src/pages/Dashboard.tsx`, `ui/src/pages/FamilyMembers.tsx`, `ui/src/pages/Tasks.tsx`, `ui/src/components/Sidebar.tsx`, and `ui/src/components/Layout.tsx`
+- [x] T040 [P] Make the todo assignee visually prominent on all todo-displaying surfaces by rendering the assignee name as a styled badge or avatar label in `ui/src/pages/Tasks.tsx`, `ui/src/pages/Tasks.css`, `ui/src/pages/Dashboard.tsx`, and `ui/src/pages/Dashboard.css`
+- [x] T041 [P] Display a German-language placeholder (e.g. “Nicht zugewiesen”) for todos without an assignee on all todo-displaying surfaces in `ui/src/pages/Tasks.tsx` and `ui/src/pages/Dashboard.tsx`
 
 ---
 
@@ -142,7 +145,7 @@ description: "Task list for Family Dashboard UI implementation"
 - Within US1, `T011` and `T012` can run in parallel.
 - Within US2, `T018` and `T019` can run in parallel.
 - Within US3, `T025` and `T026` can run in parallel.
-- In Phase 6, `T032` and `T033` can run in parallel.
+- In Phase 6, `T032`, `T033`, `T039`, `T040`, and `T041` can run in parallel.
 
 ---
 

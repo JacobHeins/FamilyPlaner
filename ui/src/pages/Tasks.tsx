@@ -8,7 +8,7 @@ import {
   Pencil,
   Check,
 } from "lucide-react";
-import { useGetFamiliesQuery } from "../api/familyApi";
+import { useGetFamiliesQuery, roleColor } from "../api/familyApi";
 import {
   useGetTodosQuery,
   useCreateTodoMutation,
@@ -107,7 +107,7 @@ export default function Tasks() {
       setShowForm(false);
       setForm(EMPTY_FORM);
     } catch {
-      setFormError("Failed to create task.");
+      setFormError("Aufgabe konnte nicht erstellt werden.");
     }
   }
 
@@ -166,7 +166,7 @@ export default function Tasks() {
       }).unwrap();
       setEditingId(null);
     } catch {
-      setEditError("Failed to save changes.");
+      setEditError("Änderungen konnten nicht gespeichert werden.");
     } finally {
       setSaving(false);
     }
@@ -178,7 +178,7 @@ export default function Tasks() {
       await deleteTodo(id).unwrap();
       setEditingId(null);
     } catch {
-      setEditError("Failed to delete task.");
+      setEditError("Aufgabe konnte nicht gelöscht werden.");
     } finally {
       setSaving(false);
     }
@@ -190,11 +190,11 @@ export default function Tasks() {
     <div className="page">
       <header className="page-header">
         <div>
-          <h1 className="page-title">Tasks</h1>
+          <h1 className="page-title">Aufgaben</h1>
           <p className="page-subtitle">
             {isLoading
-              ? "Loading…"
-              : `${openCount} open task${openCount !== 1 ? "s" : ""} for ${primaryFamily?.name ?? "your family"}`}
+              ? "Wird geladen…"
+              : `${openCount} offene Aufgabe${openCount !== 1 ? "n" : ""} für ${primaryFamily?.name ?? "Ihre Familie"}`}
           </p>
         </div>
         <button
@@ -202,7 +202,7 @@ export default function Tasks() {
           onClick={() => setShowForm((s) => !s)}
           disabled={!primaryFamily}
         >
-          <Plus size={16} /> New Task
+          <Plus size={16} /> Neue Aufgabe
         </button>
       </header>
 
@@ -221,7 +221,7 @@ export default function Tasks() {
           <div className="te-form-row">
             <input
               className="te-input"
-              placeholder="Task name…"
+              placeholder="Aufgabenname…"
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
               onKeyDown={(e) => e.key === "Enter" && submitCreate()}
@@ -231,7 +231,7 @@ export default function Tasks() {
           <div className="te-form-row">
             <input
               className="te-input"
-              placeholder="Description (optional)…"
+              placeholder="Beschreibung (optional)…"
               value={form.description}
               onChange={(e) =>
                 setForm((f) => ({ ...f, description: e.target.value }))
@@ -246,7 +246,7 @@ export default function Tasks() {
               onChange={(e) =>
                 setForm((f) => ({ ...f, deuDate: e.target.value }))
               }
-              title="Due date (optional)"
+              title="Fälligkeitsdatum (optional)"
             />
             <select
               className="te-input"
@@ -259,7 +259,7 @@ export default function Tasks() {
                 }))
               }
             >
-              <option value="">Unassigned</option>
+              <option value="">Nicht zugewiesen</option>
               {allMembers.map((m) => (
                 <option key={m.id} value={m.id}>
                   {m.name}
@@ -269,14 +269,14 @@ export default function Tasks() {
           </div>
           <div className="add-actions">
             <button className="add-cancel" onClick={() => setShowForm(false)}>
-              Cancel
+              Abbrechen
             </button>
             <button
               className="add-submit"
               onClick={submitCreate}
               disabled={creating}
             >
-              {creating ? "Adding…" : "Add Task"}
+              {creating ? "Wird hinzugefügt…" : "Aufgabe hinzufügen"}
             </button>
           </div>
         </div>
@@ -289,7 +289,7 @@ export default function Tasks() {
             className={`te-filter-btn${assigneeFilter === null ? " active" : ""}`}
             onClick={() => setAssigneeFilter(null)}
           >
-            All members
+            Alle Mitglieder
           </button>
           {allMembers.map((m) => (
             <button
@@ -313,34 +313,35 @@ export default function Tasks() {
             className={`te-tab${statusFilter === s ? " active" : ""}`}
             onClick={() => setStatusFilter(s)}
           >
-            {s.charAt(0).toUpperCase() + s.slice(1)}
+            {{ all: "Alle", open: "Offen", done: "Erledigt" }[s]}
           </button>
         ))}
       </div>
 
       {isLoading ? (
         <div className="loading-state">
-          <Loader2 size={24} className="spin" /> Loading tasks…
+          <Loader2 size={24} className="spin" /> Aufgaben werden geladen…
         </div>
       ) : todosError ? (
         <div className="error-state">
-          <AlertCircle size={18} /> Could not load tasks. Please try again.
+          <AlertCircle size={18} /> Aufgaben konnten nicht geladen werden. Bitte
+          erneut versuchen.
         </div>
       ) : !primaryFamily ? (
         <div className="empty-state">
-          No family yet — create one on the{" "}
+          Noch keine Familie — auf der{" "}
           <a href="/members" className="empty-link">
-            Family page
-          </a>
-          .
+            Familienseite
+          </a>{" "}
+          erstellen.
         </div>
       ) : (
         <div className="te-list card">
           {filtered.length === 0 ? (
             <p className="te-empty">
               {statusFilter !== "all" || assigneeFilter !== null
-                ? "No tasks match the current filter."
-                : "No tasks yet — add one above!"}
+                ? "Keine Aufgaben entsprechen dem aktuellen Filter."
+                : "Noch keine Aufgaben — oben hinzufügen!"}
             </p>
           ) : (
             filtered.map((todo) => (
@@ -353,7 +354,7 @@ export default function Tasks() {
                     <div className="te-form-row">
                       <input
                         className="te-input"
-                        placeholder="Task name…"
+                        placeholder="Aufgabenname…"
                         value={editForm.name}
                         onChange={(e) =>
                           setEditForm((f) => ({ ...f, name: e.target.value }))
@@ -364,7 +365,7 @@ export default function Tasks() {
                     <div className="te-form-row">
                       <input
                         className="te-input"
-                        placeholder="Description (optional)…"
+                        placeholder="Beschreibung (optional)…"
                         value={editForm.description}
                         onChange={(e) =>
                           setEditForm((f) => ({
@@ -385,7 +386,7 @@ export default function Tasks() {
                             deuDate: e.target.value,
                           }))
                         }
-                        title="Due date"
+                        title="Fälligkeitsdatum"
                       />
                       <select
                         className="te-input"
@@ -400,7 +401,7 @@ export default function Tasks() {
                           }))
                         }
                       >
-                        <option value="">Unassigned</option>
+                        <option value="">Nicht zugewiesen</option>
                         {allMembers.map((m) => (
                           <option key={m.id} value={m.id}>
                             {m.name}
@@ -418,9 +419,9 @@ export default function Tasks() {
                         className="te-edit-delete"
                         onClick={() => handleDeleteFromEdit(todo.id)}
                         disabled={saving}
-                        title="Delete task"
+                        title="Aufgabe löschen"
                       >
-                        <Trash2 size={14} /> Delete
+                        <Trash2 size={14} /> Löschen
                       </button>
                       <div className="te-edit-confirm-row">
                         <button
@@ -428,7 +429,7 @@ export default function Tasks() {
                           onClick={cancelEdit}
                           disabled={saving}
                         >
-                          Cancel
+                          Abbrechen
                         </button>
                         <button
                           className="add-submit"
@@ -440,7 +441,7 @@ export default function Tasks() {
                           ) : (
                             <Check size={13} />
                           )}
-                          Save
+                          Speichern
                         </button>
                       </div>
                     </div>
@@ -450,7 +451,11 @@ export default function Tasks() {
                     <button
                       className={`task-check${todo.completed ? " checked" : ""}`}
                       onClick={() => toggleComplete(todo)}
-                      title={todo.completed ? "Mark open" : "Mark done"}
+                      title={
+                        todo.completed
+                          ? "Als offen markieren"
+                          : "Als erledigt markieren"
+                      }
                     >
                       {todo.completed && (
                         <svg
@@ -471,10 +476,17 @@ export default function Tasks() {
                     </button>
                     <div className="te-info">
                       <span className="te-title">{todo.name}</span>
+                      <span
+                        className={`assignee-badge avatar-${todo.assignee ? roleColor(todo.assignee.role, 0) : "muted"}`}
+                      >
+                        {todo.assignee?.name ?? "Nicht zugewiesen"}
+                      </span>
                       <span className="te-meta">
-                        {todo.assignee?.name ?? "Unassigned"}
                         {todo.dueDate
-                          ? ` · ${new Date(todo.dueDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}`
+                          ? new Date(todo.dueDate).toLocaleDateString("de-DE", {
+                              month: "short",
+                              day: "numeric",
+                            })
                           : ""}
                         {todo.description ? ` · ${todo.description}` : ""}
                       </span>
@@ -484,19 +496,19 @@ export default function Tasks() {
                         todo.completed ? "badge-done" : "badge-task"
                       }`}
                     >
-                      {todo.completed ? "done" : "open"}
+                      {todo.completed ? "erledigt" : "offen"}
                     </span>
                     <button
                       className="te-edit-btn"
                       onClick={() => startEdit(todo)}
-                      title="Edit task"
+                      title="Aufgabe bearbeiten"
                     >
                       <Pencil size={14} />
                     </button>
                     <button
                       className="te-delete"
                       onClick={() => handleDelete(todo.id)}
-                      title="Delete task"
+                      title="Aufgabe löschen"
                     >
                       <Trash2 size={14} />
                     </button>

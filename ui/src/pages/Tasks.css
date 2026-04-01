@@ -167,6 +167,41 @@
   color: var(--text-secondary);
 }
 
+/* Assignee badge */
+.assignee-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.assignee-badge.avatar-blue {
+  background: var(--blue-soft);
+  color: var(--blue);
+}
+.assignee-badge.avatar-pink {
+  background: var(--pink-soft);
+  color: var(--pink);
+}
+.assignee-badge.avatar-green {
+  background: var(--green-soft);
+  color: var(--green);
+}
+.assignee-badge.avatar-orange {
+  background: var(--orange-soft);
+  color: var(--orange);
+}
+.assignee-badge.avatar-accent {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.assignee-badge.avatar-muted {
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+}
+
 .te-badge {
   font-size: 11px;
   font-weight: 700;

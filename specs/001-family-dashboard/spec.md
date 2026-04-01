@@ -7,8 +7,8 @@
 
 ## Scope Boundaries _(mandatory)_
 
-- **In Scope**: A responsive dashboard homepage, a weekly overview of upcoming todos, a family management page with currently supported family and member actions, and a detailed todo page with filtering by family member.
-- **Out of Scope**: Backend behavior changes, database changes, authentication redesign, notification delivery, activity or event planning, calendar synchronization, historical reporting beyond the current week, and member role changes.
+- **In Scope**: A responsive dashboard homepage, a weekly overview of upcoming todos, a family management page with currently supported family and member actions, a detailed todo page with filtering by family member, a German-language user interface throughout all pages, and a prominently visible assignee indicator on every todo item.
+- **Out of Scope**: Backend behavior changes, database changes, authentication redesign, notification delivery, activity or event planning, calendar synchronization, historical reporting beyond the current week, member role changes, and multi-language switching or locale selection.
 - **Backend Impact**: No backend changes authorized. The feature must use only the currently available family and todo endpoints and their existing request and response payloads.
 
 ## User Scenarios & Testing _(mandatory)_
@@ -62,6 +62,7 @@ As a family organizer, I want a detailed todo page with family-member filtering 
 4. **Given** an existing todo is displayed, **When** the user opens the inline edit form, **Then** the current name, description, due date, and assignee are pre-filled and editable.
 5. **Given** the user changes one or more fields and saves, **When** the update is submitted, **Then** the todo list reflects the saved changes without a page reload.
 6. **Given** the user clicks delete on a todo, **When** the deletion is confirmed by the backend, **Then** the todo is removed from the list immediately.
+7. **Given** a todo has an assigned family member, **When** the user views the todo list, **Then** the assignee's name is displayed prominently and visually distinguishable from secondary metadata such as due date or description.
 
 ### Edge Cases
 
@@ -71,6 +72,8 @@ As a family organizer, I want a detailed todo page with family-member filtering 
 - If a previously selected member filter is no longer valid, the detailed todo view must recover gracefully and return the user to a meaningful default state.
 - Long names and dense weekly todo lists must remain readable and actionable on smaller screens.
 - The family management page must clearly communicate that member role changes are not available in the current API-backed increment.
+- All user-facing labels, button text, placeholder text, status messages, empty states, and error messages must be written in German.
+- Todos with an assigned member must display the assignee name in a way that is immediately scannable without requiring the user to read surrounding metadata first.
 
 ## Requirements _(mandatory)_
 
@@ -94,6 +97,8 @@ As a family organizer, I want a detailed todo page with family-member filtering 
 - **FR-016**: Users MUST be able to edit an existing todo's name, description, due date, and assignee from the detailed todo view using an inline edit form.
 - **FR-017**: Users MUST be able to delete an existing todo from the detailed todo view.
 - **FR-018**: When editing a todo, the current values of all editable fields MUST be pre-filled so the user only changes what is necessary.
+- **FR-019**: All user-facing text in the interface — including labels, button captions, placeholder text, navigation items, empty states, and error messages — MUST be written in German.
+- **FR-020**: Every todo item MUST display the assignee's name as a visually prominent element, clearly distinguishable from secondary information such as due date or description. Unassigned todos MUST display an explicit German-language placeholder instead of leaving the assignee field blank.
 
 ### Key Entities _(include if feature involves data)_
 
@@ -112,6 +117,8 @@ As a family organizer, I want a detailed todo page with family-member filtering 
 - **SC-004**: The primary pages remain usable on desktop, tablet, and smartphone-sized screens without loss of core information or blocked primary actions.
 - **SC-005**: At least 90% of acceptance-test runs for the primary user stories complete successfully without requiring backend changes.
 - **SC-006**: Users can open the inline edit form for a todo, change any field, and save the update in no more than 5 interactions.
+- **SC-007**: A German-speaking user can complete any primary workflow without encountering English-language labels or system messages.
+- **SC-008**: A user scanning the todo list can identify who is assigned to each todo within 5 seconds without reading secondary metadata.
 
 ## Assumptions
 
@@ -122,3 +129,5 @@ As a family organizer, I want a detailed todo page with family-member filtering 
 - Family rename is supported in the current backend API, while member-role update capabilities remain excluded because the backend does not yet expose that operation.
 - Frontend route structure, page composition, and component boundaries may change during implementation if that improves usability and responsive behavior without changing the established visual language.
 - Users accessing the dashboard have typical internet connectivity and expect a modern responsive interface across common device sizes.
+- The application targets German-speaking households; German is the sole UI language for this feature increment. Multi-language support or language switching is out of scope.
+- Assignee highlighting applies to all surfaces where todos are displayed, including the dashboard summary and the detailed todo page.

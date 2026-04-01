@@ -64,7 +64,7 @@ export default function FamilyMembers() {
       setRenamingFamilyId(null);
       setRenameValue("");
     } catch {
-      setFormError("Failed to rename family.");
+      setFormError("Familie konnte nicht umbenannt werden.");
     }
   }
 
@@ -77,7 +77,7 @@ export default function FamilyMembers() {
       setShowFamilyForm(false);
       setFamilyName("");
     } catch {
-      setFormError("Failed to create family.");
+      setFormError("Familie konnte nicht erstellt werden.");
     }
   }
 
@@ -97,7 +97,7 @@ export default function FamilyMembers() {
       setShowMemberForm(false);
       setMemberForm((f) => ({ ...f, name: "" }));
     } catch {
-      setFormError("Failed to add member.");
+      setFormError("Mitglied konnte nicht hinzugefügt werden.");
     }
   }
 
@@ -117,11 +117,11 @@ export default function FamilyMembers() {
     <div className="page">
       <header className="page-header">
         <div>
-          <h1 className="page-title">Family Members</h1>
+          <h1 className="page-title">Familienmitglieder</h1>
           <p className="page-subtitle">
             {isLoading
-              ? "Loading…"
-              : `${allMembersCount} member${allMembersCount !== 1 ? "s" : ""} across ${families.length} family`}
+              ? "Wird geladen…"
+              : `${allMembersCount} Mitglied${allMembersCount !== 1 ? "er" : ""} in ${families.length} Familie${families.length !== 1 ? "n" : ""}`}
           </p>
         </div>
         <div className="fm-header-actions">
@@ -129,7 +129,7 @@ export default function FamilyMembers() {
             className="btn-secondary"
             onClick={() => setShowFamilyForm((s) => !s)}
           >
-            <Plus size={16} /> New Family
+            <Plus size={16} /> Neue Familie
           </button>
           <button
             className="btn-primary"
@@ -142,7 +142,7 @@ export default function FamilyMembers() {
             }}
             disabled={families.length === 0}
           >
-            <Plus size={16} /> Add Member
+            <Plus size={16} /> Mitglied hinzufügen
           </button>
         </div>
       </header>
@@ -161,7 +161,7 @@ export default function FamilyMembers() {
         <div className="member-form-inline card">
           <input
             className="fm-input"
-            placeholder="Family name…"
+            placeholder="Familienname…"
             value={familyName}
             onChange={(e) => setFamilyName(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && submitFamily()}
@@ -172,14 +172,14 @@ export default function FamilyMembers() {
               className="add-cancel"
               onClick={() => setShowFamilyForm(false)}
             >
-              Cancel
+              Abbrechen
             </button>
             <button
               className="add-submit"
               onClick={submitFamily}
               disabled={creating}
             >
-              {creating ? "Creating…" : "Create"}
+              {creating ? "Wird erstellt…" : "Erstellen"}
             </button>
           </div>
         </div>
@@ -189,7 +189,7 @@ export default function FamilyMembers() {
         <div className="member-form-inline card">
           <input
             className="fm-input"
-            placeholder="Member name…"
+            placeholder="Mitgliedsname…"
             value={memberForm.name}
             onChange={(e) =>
               setMemberForm((f) => ({ ...f, name: e.target.value }))
@@ -238,14 +238,14 @@ export default function FamilyMembers() {
               className="add-cancel"
               onClick={() => setShowMemberForm(false)}
             >
-              Cancel
+              Abbrechen
             </button>
             <button
               className="add-submit"
               onClick={submitMember}
               disabled={addingMember}
             >
-              {addingMember ? "Adding…" : "Add"}
+              {addingMember ? "Wird hinzugefügt…" : "Hinzufügen"}
             </button>
           </div>
         </div>
@@ -254,16 +254,16 @@ export default function FamilyMembers() {
       {isLoading ? (
         <div className="loading-state">
           <Loader2 size={28} className="spin" />
-          <span>Loading members…</span>
+          <span>Mitglieder werden geladen…</span>
         </div>
       ) : isError ? (
         <div className="error-state">
           <AlertCircle size={18} />
-          Could not load family data. Please refresh the page.
+          Familiendaten konnten nicht geladen werden. Bitte die Seite neu laden.
         </div>
       ) : families.length === 0 ? (
         <div className="empty-state">
-          No families yet — create one above to get started!
+          Noch keine Familien — oben eine erstellen!
         </div>
       ) : (
         families.map((family) => (
@@ -285,14 +285,14 @@ export default function FamilyMembers() {
                     className="rename-action rename-confirm"
                     onClick={() => submitRename(family.id)}
                     disabled={renaming}
-                    title="Confirm"
+                    title="Bestätigen"
                   >
                     <Check size={14} />
                   </button>
                   <button
                     className="rename-action rename-cancel"
                     onClick={cancelRename}
-                    title="Cancel"
+                    title="Abbrechen"
                   >
                     <X size={14} />
                   </button>
@@ -303,10 +303,10 @@ export default function FamilyMembers() {
                   <button
                     className="family-rename-btn"
                     onClick={() => startRename(family.id, family.name)}
-                    title="Rename family"
+                    title="Familie umbenennen"
                   >
                     <Pencil size={13} />
-                    Rename
+                    Umbenennen
                   </button>
                 </>
               )}
@@ -326,14 +326,16 @@ export default function FamilyMembers() {
                     <div className="member-stats">
                       <div className="member-stat">
                         <User size={12} />
-                        <span>Active</span>
+                        <span>Aktiv</span>
                       </div>
                     </div>
                   </div>
                 );
               })}
               {family.familyMembers.length === 0 && (
-                <p className="empty-family">No members yet — add one above.</p>
+                <p className="empty-family">
+                  Noch keine Mitglieder — oben hinzufügen.
+                </p>
               )}
             </div>
           </div>

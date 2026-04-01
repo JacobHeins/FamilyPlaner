@@ -13,7 +13,7 @@ import { useGetFamiliesQuery, roleColor, roleLabel } from "../api/familyApi";
 import { useGetTodosQuery } from "../api/todoApi";
 import "./Dashboard.css";
 
-const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const DAY_LABELS = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
 
 function getWeekDates() {
   const today = new Date();
@@ -95,20 +95,22 @@ export default function Dashboard() {
   );
 
   const isLoading = familiesLoading || todosLoading;
-  const familyNames = families.map((f) => f.name).join(", ") || "Your family";
+  const familyNames = families.map((f) => f.name).join(", ") || "Ihre Familie";
 
   return (
     <div className="page">
       <header className="page-header">
         <div>
           <h1 className="page-title">
-            {familiesLoading ? "Loading…" : `Good morning, ${familyNames}! 👋`}
+            {familiesLoading
+              ? "Wird geladen…"
+              : `Guten Morgen, ${familyNames}! 👋`}
           </h1>
-          <p className="page-subtitle">Here's what's happening this week.</p>
+          <p className="page-subtitle">Das steht diese Woche an.</p>
         </div>
         <Link to="/tasks" className="btn-primary">
           <Plus size={16} />
-          New Task
+          Neue Aufgabe
         </Link>
       </header>
 
@@ -126,7 +128,7 @@ export default function Dashboard() {
                 allMembers.length
               )}
             </div>
-            <div className="stat-label">Family Members</div>
+            <div className="stat-label">Familienmitglieder</div>
           </div>
         </div>
         <div className="stat-card stat-green">
@@ -141,7 +143,7 @@ export default function Dashboard() {
                 weekTodos.length
               )}
             </div>
-            <div className="stat-label">This Week's Tasks</div>
+            <div className="stat-label">Aufgaben diese Woche</div>
           </div>
         </div>
         <div className="stat-card stat-orange">
@@ -156,7 +158,7 @@ export default function Dashboard() {
                 openTodosCount
               )}
             </div>
-            <div className="stat-label">Open Tasks</div>
+            <div className="stat-label">Offene Aufgaben</div>
           </div>
         </div>
         <div className="stat-card stat-pink">
@@ -171,7 +173,7 @@ export default function Dashboard() {
                 openWeekTodos.length
               )}
             </div>
-            <div className="stat-label">Due This Week</div>
+            <div className="stat-label">Fällig diese Woche</div>
           </div>
         </div>
       </div>
@@ -179,9 +181,9 @@ export default function Dashboard() {
       {/* Week strip */}
       <section className="section">
         <div className="section-header">
-          <h2 className="section-title">This Week</h2>
+          <h2 className="section-title">Diese Woche</h2>
           <Link to="/tasks" className="section-link">
-            View all tasks <ArrowRight size={14} />
+            Alle Aufgaben <ArrowRight size={14} />
           </Link>
         </div>
         <div className="week-strip">
@@ -200,8 +202,8 @@ export default function Dashboard() {
         <div className="error-state">
           <AlertCircle size={18} />
           {familiesError
-            ? "Could not load family data. Please try again."
-            : "Could not load tasks. Please try again."}
+            ? "Familiendaten konnten nicht geladen werden. Bitte erneut versuchen."
+            : "Aufgaben konnten nicht geladen werden. Bitte erneut versuchen."}
         </div>
       )}
 
@@ -210,24 +212,24 @@ export default function Dashboard() {
         {/* Family members */}
         <section className="section card">
           <div className="section-header">
-            <h2 className="section-title">Family Members</h2>
+            <h2 className="section-title">Familienmitglieder</h2>
             <Link to="/members" className="section-link">
-              Manage <ArrowRight size={14} />
+              Verwalten <ArrowRight size={14} />
             </Link>
           </div>
           {familiesLoading ? (
             <div className="loading-state">
-              <Loader2 size={18} className="spin" /> Loading members…
+              <Loader2 size={18} className="spin" /> Mitglieder werden geladen…
             </div>
           ) : familiesError ? (
             <div className="error-state">
-              <AlertCircle size={16} /> Failed to load members.
+              <AlertCircle size={16} /> Mitglieder konnten nicht geladen werden.
             </div>
           ) : allMembers.length === 0 ? (
             <div className="empty-state">
-              No members yet —{" "}
+              Noch keine Mitglieder —{" "}
               <Link to="/members" className="empty-link">
-                add them here
+                hier hinzufügen
               </Link>
               .
             </div>
@@ -251,32 +253,32 @@ export default function Dashboard() {
         {/* Open tasks this week */}
         <section className="section card">
           <div className="section-header">
-            <h2 className="section-title">Open Tasks This Week</h2>
+            <h2 className="section-title">Offene Aufgaben diese Woche</h2>
             <Link to="/tasks" className="section-link">
-              See all <ArrowRight size={14} />
+              Alle anzeigen <ArrowRight size={14} />
             </Link>
           </div>
           {familiesLoading || todosLoading ? (
             <div className="loading-state">
-              <Loader2 size={18} className="spin" /> Loading tasks…
+              <Loader2 size={18} className="spin" /> Aufgaben werden geladen…
             </div>
           ) : todosError ? (
             <div className="error-state">
-              <AlertCircle size={16} /> Failed to load tasks.
+              <AlertCircle size={16} /> Aufgaben konnten nicht geladen werden.
             </div>
           ) : !primaryFamily ? (
             <div className="empty-state">
-              No family yet —{" "}
+              Noch keine Familie —{" "}
               <Link to="/members" className="empty-link">
-                create one
+                jetzt erstellen
               </Link>
               .
             </div>
           ) : openWeekTodos.length === 0 ? (
             <div className="empty-state">
-              No open tasks this week —{" "}
+              Diese Woche keine offenen Aufgaben —{" "}
               <Link to="/tasks" className="empty-link">
-                add one
+                neue hinzufügen
               </Link>
               !
             </div>
@@ -288,12 +290,20 @@ export default function Dashboard() {
                   <div className="task-info">
                     <span className="task-title">{t.name}</span>
                     <span className="task-meta">
-                      {t.assignee?.name ?? "Unassigned"}
                       {t.dueDate
-                        ? ` · ${new Date(t.dueDate).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}`
+                        ? new Date(t.dueDate).toLocaleDateString("de-DE", {
+                            weekday: "short",
+                            month: "short",
+                            day: "numeric",
+                          })
                         : ""}
                     </span>
                   </div>
+                  <span
+                    className={`assignee-badge avatar-${t.assignee ? roleColor(t.assignee.role, 0) : "muted"}`}
+                  >
+                    {t.assignee?.name ?? "Nicht zugewiesen"}
+                  </span>
                 </li>
               ))}
             </ul>

@@ -3,9 +3,9 @@ import { LayoutDashboard, X, Users, CheckSquare, Sparkles } from "lucide-react";
 import "./Sidebar.css";
 
 const nav = [
-  { to: "/", icon: LayoutDashboard, label: "Dashboard" },
-  { to: "/members", icon: Users, label: "Family" },
-  { to: "/tasks", icon: CheckSquare, label: "Todos" },
+  { to: "/", icon: LayoutDashboard, label: "Übersicht" },
+  { to: "/members", icon: Users, label: "Familie" },
+  { to: "/tasks", icon: CheckSquare, label: "Aufgaben" },
 ];
 
 interface SidebarProps {
@@ -18,7 +18,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     <>
       <button
         type="button"
-        aria-label="Close navigation"
+        aria-label="Navigation schließen"
         className={`sidebar-backdrop${isOpen ? " visible" : ""}`}
         onClick={onClose}
       />
@@ -30,14 +30,14 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             </div>
             <div>
               <span className="sidebar-brand-name">FamilyPlaner</span>
-              <p className="sidebar-brand-tagline">Household command center</p>
+              <p className="sidebar-brand-tagline">Familienplaner</p>
             </div>
           </div>
           <button
             type="button"
             className="sidebar-close"
             onClick={onClose}
-            aria-label="Close navigation"
+            aria-label="Navigation schließen"
           >
             <X size={16} />
           </button>
@@ -61,9 +61,9 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         </nav>
 
         <div className="sidebar-footer">
-          <p className="sidebar-footer-label">Current scope</p>
+          <p className="sidebar-footer-label">Verfügbare Bereiche</p>
           <p className="sidebar-footer-text">
-            Dashboard, family management, and todo detail views.
+            Übersicht, Familienverwaltung und Aufgaben.
           </p>
         </div>
       </aside>
