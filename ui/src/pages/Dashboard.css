@@ -316,61 +316,6 @@
   }
 }
 
-/* Events */
-.event-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.event-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.event-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  margin-top: 4px;
-  flex-shrink: 0;
-}
-
-.dot-blue {
-  background: var(--blue);
-}
-.dot-pink {
-  background: var(--pink);
-}
-.dot-orange {
-  background: var(--orange);
-}
-.dot-green {
-  background: var(--green);
-}
-.dot-accent {
-  background: var(--accent);
-}
-
-.event-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.event-title {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-primary);
-}
-.event-meta {
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
 /* Tasks */
 .task-list {
   list-style: none;

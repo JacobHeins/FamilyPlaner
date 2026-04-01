@@ -81,19 +81,22 @@ description: "Task list for Family Dashboard UI implementation"
 
 ## Phase 5: User Story 3 - Review and Filter Family Todos (Priority: P3)
 
-**Goal**: Deliver a detailed todo page with assignee filtering and supported create, update, and delete workflows.
+**Goal**: Deliver a detailed todo page with assignee filtering and supported create, update (name, description, due date, assignee), complete-toggle, and delete workflows.
 
-**Independent Test**: Open the detailed todo page, verify all todos load for the active family, filter by a specific family member, and confirm create, update, and delete flows use the existing backend contract.
+**Independent Test**: Open the detailed todo page, verify all todos load for the active family, filter by a specific family member, edit a todo's fields using the inline form (verifying current values are pre-filled), save the changes, and delete a todo.
 
 ### Implementation for User Story 3
 
-- [ ] T025 [P] [US3] Restructure the detailed todo page for filtering and CRUD ergonomics in `ui/src/pages/TasksEvents.tsx`
-- [ ] T026 [P] [US3] Update the todo page styling for responsive detail and filter layout in `ui/src/pages/TasksEvents.css`
-- [ ] T027 [US3] Implement todo list and assignee filter queries in `ui/src/api/todoApi.ts` and `ui/src/pages/TasksEvents.tsx`
-- [ ] T028 [US3] Implement todo create, update, and delete flows with the current backend payload shape in `ui/src/api/todoApi.ts` and `ui/src/pages/TasksEvents.tsx`
-- [ ] T029 [US3] Add loading, empty, filtered-empty, validation, and error handling for todo workflows in `ui/src/pages/TasksEvents.tsx` and `ui/src/pages/TasksEvents.css`
-- [ ] T030 [US3] Align dashboard-to-todo navigation and shared member filter behavior in `ui/src/pages/Dashboard.tsx`, `ui/src/pages/TasksEvents.tsx`, and `ui/src/components/Sidebar.tsx`
-- [ ] T031 [US3] Validate detailed todo workflows with `npm run build` in `ui/package.json`
+- [x] T025 [P] [US3] Restructure the detailed todo page for filtering and CRUD ergonomics in `ui/src/pages/Tasks.tsx`
+- [x] T026 [P] [US3] Update the todo page styling for responsive detail and filter layout in `ui/src/pages/Tasks.css`
+- [x] T027 [US3] Implement todo list and assignee filter queries in `ui/src/api/todoApi.ts` and `ui/src/pages/Tasks.tsx`
+- [x] T028 [US3] Implement todo create, update, and delete flows with the current backend payload shape in `ui/src/api/todoApi.ts` and `ui/src/pages/Tasks.tsx`
+- [x] T029 [US3] Add loading, empty, filtered-empty, validation, and error handling for todo workflows in `ui/src/pages/Tasks.tsx` and `ui/src/pages/Tasks.css`
+- [x] T030 [US3] Align dashboard-to-todo navigation and shared member filter behavior in `ui/src/pages/Dashboard.tsx`, `ui/src/pages/Tasks.tsx`, and `ui/src/components/Sidebar.tsx`
+- [x] T031 [US3] Validate detailed todo workflows with `npm run build` in `ui/package.json`
+- [x] T036 [US3] Add inline edit form per todo row for editing name, description, due date, and assignee in `ui/src/pages/Tasks.tsx` and `ui/src/pages/Tasks.css`
+- [x] T037 [US3] Pre-fill all current todo field values when opening the inline edit form, converting ISO timestamps to YYYY-MM-DD for the date picker in `ui/src/pages/Tasks.tsx`
+- [x] T038 [US3] Fix due-date serialisation to send end-of-day UTC instants (`T23:59:59.999Z`) satisfying the backend `@Future` constraint in `ui/src/pages/Tasks.tsx`
 
 **Checkpoint**: All user stories are complete when dashboard, family management, and detailed todo flows each work independently.
 
@@ -105,7 +108,7 @@ description: "Task list for Family Dashboard UI implementation"
 
 - [ ] T032 [P] Remove or clearly de-emphasize deferred planner surface entry points in `ui/src/App.tsx` and `ui/src/components/Sidebar.tsx`
 - [ ] T033 [P] Harmonize shared responsive spacing and dark-theme styling across `ui/src/index.css`, `ui/src/components/Layout.css`, and `ui/src/components/Sidebar.css`
-- [ ] T034 Review route and page ergonomics across `ui/src/pages/Dashboard.tsx`, `ui/src/pages/FamilyMembers.tsx`, and `ui/src/pages/TasksEvents.tsx`
+- [ ] T034 Review route and page ergonomics across `ui/src/pages/Dashboard.tsx`, `ui/src/pages/FamilyMembers.tsx`, and `ui/src/pages/Tasks.tsx`
 - [ ] T035 Run quickstart validation against `specs/001-family-dashboard/quickstart.md`
 
 ---

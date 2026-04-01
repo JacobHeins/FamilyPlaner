@@ -46,19 +46,22 @@ As a family organizer, I want a dedicated family management page so that I can v
 
 ---
 
-### User Story 3 - Review and Filter Family Todos (Priority: P3)
+### User Story 3 - Review, Filter, and Manage Family Todos (Priority: P3)
 
-As a family organizer, I want a detailed todo page with family-member filtering so that I can inspect all household work and focus on one person's assignments when needed.
+As a family organizer, I want a detailed todo page with family-member filtering and full todo management so that I can inspect all household work, focus on one person's assignments, update todo details, and remove completed or obsolete tasks.
 
 **Why this priority**: Detailed task management deepens the usefulness of the dashboard, but it depends on the dashboard and family overview already establishing the core navigation and context.
 
-**Independent Test**: Can be fully tested by opening the todo page, confirming that all todos are listed in detail, applying a family-member filter, and seeing only the relevant assigned todos.
+**Independent Test**: Can be fully tested by opening the todo page, confirming that all todos are listed in detail, applying a family-member filter, editing a todo's name, description, due date, or assignee, and deleting a todo.
 
 **Acceptance Scenarios**:
 
 1. **Given** the family has multiple todos, **When** the user opens the detailed todo page, **Then** the page shows a full list with enough detail to distinguish status, assignee, and timing.
 2. **Given** todos are assigned to multiple family members, **When** the user filters by one member, **Then** only todos assigned to that member are shown.
 3. **Given** the selected family member has no assigned todos, **When** the filter is applied, **Then** the page shows an explicit empty result state rather than a blank list.
+4. **Given** an existing todo is displayed, **When** the user opens the inline edit form, **Then** the current name, description, due date, and assignee are pre-filled and editable.
+5. **Given** the user changes one or more fields and saves, **When** the update is submitted, **Then** the todo list reflects the saved changes without a page reload.
+6. **Given** the user clicks delete on a todo, **When** the deletion is confirmed by the backend, **Then** the todo is removed from the list immediately.
 
 ### Edge Cases
 
@@ -88,6 +91,9 @@ As a family organizer, I want a detailed todo page with family-member filtering 
 - **FR-013**: The system MUST keep the feature within the approved interface scope and treat missing or insufficient household data as a documented dependency rather than silently expanding the feature scope.
 - **FR-014**: The system MUST use only the currently available backend operations: list families, create a family, update a family name, add a family member, list todos by family with optional assignee filter, create a todo, update a todo, and delete a todo.
 - **FR-015**: The frontend MAY be restructured as needed to improve usability, navigation clarity, and responsiveness, provided the application keeps a recognizably similar visual style.
+- **FR-016**: Users MUST be able to edit an existing todo's name, description, due date, and assignee from the detailed todo view using an inline edit form.
+- **FR-017**: Users MUST be able to delete an existing todo from the detailed todo view.
+- **FR-018**: When editing a todo, the current values of all editable fields MUST be pre-filled so the user only changes what is necessary.
 
 ### Key Entities _(include if feature involves data)_
 
@@ -105,6 +111,7 @@ As a family organizer, I want a detailed todo page with family-member filtering 
 - **SC-003**: Users can narrow the detailed todo view to a single family member in no more than 3 interactions.
 - **SC-004**: The primary pages remain usable on desktop, tablet, and smartphone-sized screens without loss of core information or blocked primary actions.
 - **SC-005**: At least 90% of acceptance-test runs for the primary user stories complete successfully without requiring backend changes.
+- **SC-006**: Users can open the inline edit form for a todo, change any field, and save the update in no more than 5 interactions.
 
 ## Assumptions
 
