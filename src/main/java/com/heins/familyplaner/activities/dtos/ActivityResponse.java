@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 public record ActivityResponse(
+        Long id,
         String name,
         String description,
         String location,

@@ -7,44 +7,24 @@ import {
   Plus,
   Loader2,
   AlertCircle,
+  Zap,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useGetFamiliesQuery, roleColor, roleLabel } from "../api/familyApi";
 import { useGetTodosQuery } from "../api/todoApi";
+import { useGetActivitiesQuery } from "../api/activityApi";
+import {
+  getWeekDates,
+  isInCurrentWeek,
+  getToday,
+  formatTime,
+} from "../utils/weekUtils";
 import "./Dashboard.css";
 
-const DAY_LABELS = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
-
-function getWeekDates() {
-  const today = new Date();
-  const monday = new Date(today);
-  monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
-  return DAY_LABELS.map((label, i) => {
-    const date = new Date(monday);
-    date.setDate(monday.getDate() + i);
-    return {
-      label,
-      date: date.getDate(),
-      isToday: date.toDateString() === today.toDateString(),
-    };
-  });
-}
-
-function isInCurrentWeek(dateStr: string | null): boolean {
-  if (!dateStr) return false;
-  const today = new Date();
-  const monday = new Date(today);
-  monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
-  monday.setHours(0, 0, 0, 0);
-  const sunday = new Date(monday);
-  sunday.setDate(monday.getDate() + 6);
-  sunday.setHours(23, 59, 59, 999);
-  const d = new Date(dateStr);
-  return d >= monday && d <= sunday;
-}
-
 export default function Dashboard() {
+  const navigate = useNavigate();
   const week = useMemo(() => getWeekDates(), []);
+  const today = useMemo(() => getToday(), []);
 
   const {
     data: families = [],
@@ -62,6 +42,32 @@ export default function Dashboard() {
     { familyId: primaryFamily?.id ?? 0 },
     { skip: !primaryFamily },
   );
+
+  const { data: activities = [], isLoading: activitiesLoading } =
+    useGetActivitiesQuery(
+      { familyId: primaryFamily?.id ?? 0 },
+      { skip: !primaryFamily },
+    );
+
+  const todayActivities = useMemo(
+    () =>
+      activities
+        .filter((a) => a.day === today)
+        .sort((a, b) => (a.startTime ?? "").localeCompare(b.startTime ?? "")),
+    [activities, today],
+  );
+
+  const otherDayActivities = useMemo(() => {
+    const otherDays = week.filter((d) => !d.isToday);
+    return otherDays
+      .map((d) => ({
+        ...d,
+        items: activities
+          .filter((a) => a.day === d.dateStr)
+          .sort((a, b) => (a.startTime ?? "").localeCompare(b.startTime ?? "")),
+      }))
+      .filter((d) => d.items.length > 0);
+  }, [activities, week]);
 
   const allMembers = useMemo(
     () =>
@@ -95,6 +101,7 @@ export default function Dashboard() {
   );
 
   const isLoading = familiesLoading || todosLoading;
+  const isActivitiesLoading = familiesLoading || activitiesLoading;
   const familyNames = families.map((f) => f.name).join(", ") || "Ihre Familie";
 
   return (
@@ -113,7 +120,6 @@ export default function Dashboard() {
           Neue Aufgabe
         </Link>
       </header>
-
       {/* Stats row */}
       <div className="stats-grid">
         <div className="stat-card stat-accent">
@@ -144,6 +150,21 @@ export default function Dashboard() {
               )}
             </div>
             <div className="stat-label">Aufgaben diese Woche</div>
+          </div>
+        </div>
+        <div className="stat-card stat-pink">
+          <div className="stat-icon">
+            <Zap size={20} />
+          </div>
+          <div>
+            <div className="stat-value">
+              {isActivitiesLoading ? (
+                <Loader2 size={20} className="spin" />
+              ) : (
+                todayActivities.length
+              )}
+            </div>
+            <div className="stat-label">Aktivitäten heute</div>
           </div>
         </div>
         <div className="stat-card stat-orange">
@@ -177,7 +198,6 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-
       {/* Week strip */}
       <section className="section">
         <div className="section-header">
@@ -196,7 +216,6 @@ export default function Dashboard() {
           ))}
         </div>
       </section>
-
       {/* Error banners */}
       {(familiesError || todosError) && (
         <div className="error-state">
@@ -206,8 +225,128 @@ export default function Dashboard() {
             : "Aufgaben konnten nicht geladen werden. Bitte erneut versuchen."}
         </div>
       )}
-
-      {/* Two-column bottom section */}
+      {/* Heutige Aktivitäten */}
+      <section className="section dash-today-section">
+        <div className="section-header">
+          <h2 className="section-title">
+            <Zap size={16} />
+            Heutige Aktivitäten
+          </h2>
+          <Link to="/activities" className="section-link">
+            Alle anzeigen <ArrowRight size={14} />
+          </Link>
+        </div>
+        {isActivitiesLoading ? (
+          <div className="loading-state">
+            <Loader2 size={18} className="spin" /> Aktivitäten werden geladen…
+          </div>
+        ) : !primaryFamily ? (
+          <div className="empty-state">
+            Noch keine Familie —{" "}
+            <Link to="/members" className="empty-link">
+              jetzt erstellen
+            </Link>
+            .
+          </div>
+        ) : todayActivities.length === 0 ? (
+          <p className="dash-act-empty">Heute keine Aktivitäten geplant.</p>
+        ) : (
+          <ul className="dash-act-list">
+            {todayActivities.map((act) => {
+              const start = formatTime(act.startTime);
+              const end = formatTime(act.endTime);
+              const timeStr =
+                start && end ? `${start}–${end}` : start ? `ab ${start}` : null;
+              return (
+                <li
+                  key={act.id}
+                  className="dash-act-item"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() =>
+                    navigate("/activities", {
+                      state: { selectedId: act.id },
+                    })
+                  }
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      navigate("/activities", {
+                        state: { selectedId: act.id },
+                      });
+                    }
+                  }}
+                >
+                  <div className="dash-act-body">
+                    <span className="dash-act-name">{act.name}</span>
+                    {(timeStr || act.location) && (
+                      <span className="dash-act-meta">
+                        {timeStr && <span>{timeStr}</span>}
+                        {act.location && <span>{act.location}</span>}
+                      </span>
+                    )}
+                  </div>
+                  {act.participants.length > 0 && (
+                    <div className="dash-act-badges">
+                      {act.participants.slice(0, 3).map((p) => (
+                        <span key={p.id} className="dash-act-badge">
+                          {p.name.charAt(0).toUpperCase()}
+                        </span>
+                      ))}
+                      {act.participants.length > 3 && (
+                        <span className="dash-act-badge">
+                          +{act.participants.length - 3}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  <ArrowRight size={14} className="dash-act-arrow" />
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
+      {/* Weitere Aktivitäten der Woche */}
+      {!isActivitiesLoading && otherDayActivities.length > 0 && (
+        <section className="section dash-week-preview">
+          <div className="section-header">
+            <h2 className="section-title">Weitere Aktivitäten der Woche</h2>
+            <Link to="/week" className="section-link">
+              Alle anzeigen <ArrowRight size={14} />
+            </Link>
+          </div>
+          {otherDayActivities.map((day) => (
+            <div key={day.dateStr} className="dash-week-preview-day">
+              <div className="dash-week-preview-day-label">
+                {day.label} {day.date}.
+              </div>
+              <ul className="dash-week-preview-list">
+                {day.items.map((act) => {
+                  const start = formatTime(act.startTime);
+                  const end = formatTime(act.endTime);
+                  const timeStr =
+                    start && end
+                      ? `${start}\u2013${end}`
+                      : start
+                        ? `ab ${start}`
+                        : null;
+                  return (
+                    <li key={act.id} className="dash-week-preview-row">
+                      <span className="dash-week-preview-name">{act.name}</span>
+                      {timeStr && (
+                        <span className="dash-week-preview-time">
+                          {timeStr}
+                        </span>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
+        </section>
+      )}
+      {/* Two-column bottom section */}{" "}
       <div className="dashboard-cols">
         {/* Family members */}
         <section className="section card">

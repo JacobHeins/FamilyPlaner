@@ -3,6 +3,8 @@ import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
 import FamilyMembers from "./pages/FamilyMembers";
 import Tasks from "./pages/Tasks";
+import WeeklyPlanner from "./pages/WeeklyPlanner";
+import Activities from "./pages/Activities";
 import "./App.css";
 
 function App() {
@@ -13,7 +15,8 @@ function App() {
           <Route index element={<Dashboard />} />
           <Route path="members" element={<FamilyMembers />} />
           <Route path="tasks" element={<Tasks />} />
-          <Route path="week" element={<Navigate to="/tasks" replace />} />
+          <Route path="week" element={<WeeklyPlanner />} />
+          <Route path="activities" element={<Activities />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>

@@ -27,6 +27,7 @@ public record CreateActivityRequest(
         LocalTime startTime,
         LocalTime endtime,
 
+        @NotNull
         @Min(1)
         Long familyId,
 

@@ -61,6 +61,48 @@ export interface UpdateTodoRequest {
   assigneeId?: number;
 }
 
+// ─── Activity types ────────────────────────────────────────────────────────
+
+export interface Activity {
+  id: number;
+  name: string;
+  description: string | null;
+  location: string | null;
+  day: string; // YYYY-MM-DD
+  startTime: string | null; // HH:mm:ss
+  endTime: string | null; // HH:mm:ss
+  familyId: number;
+  participants: FamilyMember[];
+}
+
+export interface ActivityQueryArgs {
+  familyId: number;
+  memberId?: number;
+}
+
+export interface CreateActivityRequest {
+  name: string;
+  description?: string;
+  location?: string;
+  day: string;
+  startTime?: string;
+  endtime?: string; // lowercase 't' — matches backend DTO field name
+  familyId: number;
+  participants?: number[] | null;
+}
+
+export interface UpdateActivityRequest {
+  name: string;
+  description?: string;
+  location?: string;
+  day: string;
+  startTime?: string;
+  endtime?: string; // lowercase 't' — matches backend DTO field name
+  participants?: number[] | null;
+}
+
+// ─── Selectors ─────────────────────────────────────────────────────────────
+
 export const selectFamilies = createSelector(
   [(families: Family[]) => families],
   (families) => families,

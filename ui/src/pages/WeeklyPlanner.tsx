@@ -1,223 +1,140 @@
-import { useState, useEffect } from "react";
-import { Plus, X, ChevronLeft, ChevronRight } from "lucide-react";
-import { getFamilies } from "../api/familyApi";
+import { useMemo } from "react";
+import { Loader2, AlertCircle, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useGetFamiliesQuery, roleColor } from "../api/familyApi";
+import { useGetActivitiesQuery } from "../api/activityApi";
+import { getWeekDates, isInCurrentWeek, formatTime } from "../utils/weekUtils";
+import type { Activity } from "../app/store/types";
 import "./WeeklyPlanner.css";
 
-const DAYS = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-  "Sunday",
-];
-const MEMBERS = ["Mom", "Dad", "Luca", "Mia"];
-const COLORS = ["accent", "green", "orange", "pink", "blue"];
-
-type Entry = { id: number; title: string; member: string; color: string };
-type WeekData = Record<string, Entry[]>;
-
-const sample: WeekData = {
-  Monday: [
-    { id: 1, title: "Football training", member: "Luca", color: "blue" },
-  ],
-  Tuesday: [{ id: 2, title: "Dentist", member: "Mia", color: "pink" }],
-  Wednesday: [
-    { id: 3, title: "Parent meeting", member: "Mom", color: "orange" },
-  ],
-  Thursday: [{ id: 4, title: "Swimming", member: "Luca", color: "green" }],
-  Friday: [],
-  Saturday: [{ id: 5, title: "Family brunch", member: "All", color: "accent" }],
-  Sunday: [],
-};
-
-let nextId = 10;
-
-function getWeekLabel(offset: number) {
-  const today = new Date();
-  const monday = new Date(today);
-  monday.setDate(today.getDate() - ((today.getDay() + 6) % 7) + offset * 7);
-  const sunday = new Date(monday);
-  sunday.setDate(monday.getDate() + 6);
-  const fmt = (d: Date) =>
-    d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
-  return `${fmt(monday)} – ${fmt(sunday)}`;
-}
-
-function getDayDate(dayIndex: number, weekOffset: number) {
-  const today = new Date();
-  const monday = new Date(today);
-  monday.setDate(today.getDate() - ((today.getDay() + 6) % 7) + weekOffset * 7);
-  const d = new Date(monday);
-  d.setDate(monday.getDate() + dayIndex);
-  return d.getDate();
-}
-
 export default function WeeklyPlanner() {
-  const [weekOffset, setWeekOffset] = useState(0);
-  const [data, setData] = useState<WeekData>(sample);
-  const [adding, setAdding] = useState<string | null>(null);
-  const [members, setMembers] = useState<string[]>(MEMBERS);
-  const [form, setForm] = useState({
-    title: "",
-    member: MEMBERS[0],
-    color: COLORS[0],
-  });
+  const weekDays = useMemo(() => getWeekDates(), []);
 
-  useEffect(() => {
-    getFamilies()
-      .then((families) => {
-        const names = families.flatMap((f) =>
-          f.familyMembers.map((m) => m.name),
-        );
-        if (names.length > 0) {
-          setMembers(["All", ...names]);
-          setForm((f) => ({ ...f, member: names[0] }));
-        }
-      })
-      .catch(() => {}); // keep defaults on error
-  }, []);
+  const {
+    data: families = [],
+    isLoading: familiesLoading,
+    isError: familiesError,
+  } = useGetFamiliesQuery();
 
-  function openAdd(day: string) {
-    setAdding(day);
-    setForm({ title: "", member: MEMBERS[0], color: COLORS[0] });
-  }
+  const primaryFamily = families[0] ?? null;
 
-  function submitAdd() {
-    if (!form.title.trim() || !adding) return;
-    const entry: Entry = { id: nextId++, ...form };
-    setData((prev) => ({
-      ...prev,
-      [adding]: [...(prev[adding] || []), entry],
-    }));
-    setAdding(null);
-  }
+  const {
+    data: activities = [],
+    isLoading: activitiesLoading,
+    isError: activitiesError,
+  } = useGetActivitiesQuery(
+    { familyId: primaryFamily?.id ?? 0 },
+    { skip: !primaryFamily },
+  );
 
-  function removeEntry(day: string, id: number) {
-    setData((prev) => ({
-      ...prev,
-      [day]: prev[day].filter((e) => e.id !== id),
-    }));
-  }
+  const isLoading = familiesLoading || activitiesLoading;
+  const isError = familiesError || activitiesError;
+
+  const weekActivities = useMemo(
+    () => activities.filter((a) => isInCurrentWeek(a.day)),
+    [activities],
+  );
+
+  const activitiesByDay = useMemo(() => {
+    const map: Record<string, Activity[]> = {};
+    for (const day of weekDays) {
+      map[day.dateStr] = weekActivities.filter((a) => a.day === day.dateStr);
+    }
+    return map;
+  }, [weekDays, weekActivities]);
 
   return (
-    <div className="page planner-page">
-      <header className="page-header">
+    <div className="wp-page">
+      <header className="wp-header">
         <div>
-          <h1 className="page-title">Weekly Planner</h1>
+          <h1 className="page-title">Wochenübersicht</h1>
           <p className="page-subtitle">
-            Plan and organise your family's upcoming week.
+            Aktivitäten dieser Woche auf einen Blick.
           </p>
         </div>
-        <div className="week-nav">
-          <button
-            className="week-nav-btn"
-            onClick={() => setWeekOffset((o) => o - 1)}
-          >
-            <ChevronLeft size={16} />
-          </button>
-          <span className="week-nav-label">{getWeekLabel(weekOffset)}</span>
-          <button
-            className="week-nav-btn"
-            onClick={() => setWeekOffset((o) => o + 1)}
-          >
-            <ChevronRight size={16} />
-          </button>
-        </div>
+        <Link to="/activities" className="wp-cta-link">
+          Aktivität planen <ArrowRight size={14} />
+        </Link>
       </header>
 
-      <div className="planner-grid">
-        {DAYS.map((day, idx) => {
-          const dateNum = getDayDate(idx, weekOffset);
-          const isToday =
-            weekOffset === 0 &&
-            new Date().toLocaleDateString("en-GB", { weekday: "long" }) === day;
+      {isLoading && (
+        <div className="wp-loading">
+          <Loader2 size={18} className="spin" />
+          Aktivitäten werden geladen…
+        </div>
+      )}
 
-          return (
-            <div key={day} className={`planner-col${isToday ? " today" : ""}`}>
-              <div className="planner-col-header">
-                <span className="planner-day-name">{day.slice(0, 3)}</span>
-                <span
-                  className={`planner-day-num${isToday ? " today-num" : ""}`}
-                >
-                  {dateNum}
-                </span>
-              </div>
+      {!isLoading && isError && (
+        <div className="wp-error">
+          <AlertCircle size={16} />
+          Aktivitäten konnten nicht geladen werden. Bitte erneut versuchen.
+        </div>
+      )}
 
-              <div className="planner-entries">
-                {(data[day] || []).map((e) => (
-                  <div key={e.id} className={`planner-entry entry-${e.color}`}>
-                    <div className="entry-body">
-                      <span className="entry-title">{e.title}</span>
-                      <span className="entry-member">{e.member}</span>
-                    </div>
-                    <button
-                      className="entry-remove"
-                      onClick={() => removeEntry(day, e.id)}
-                    >
-                      <X size={12} />
-                    </button>
-                  </div>
-                ))}
-              </div>
+      {!isLoading && !isError && weekActivities.length === 0 && (
+        <p className="wp-empty-week-hint">
+          Diese Woche noch keine Aktivitäten geplant.{" "}
+          <Link to="/activities">Jetzt planen →</Link>
+        </p>
+      )}
 
-              {adding === day ? (
-                <div className="add-form">
-                  <input
-                    className="add-input"
-                    placeholder="Title…"
-                    value={form.title}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, title: e.target.value }))
-                    }
-                    onKeyDown={(e) => e.key === "Enter" && submitAdd()}
-                    autoFocus
-                  />
-                  <select
-                    className="add-select"
-                    value={form.member}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, member: e.target.value }))
-                    }
-                  >
-                    {members.map((m) => (
-                      <option key={m}>{m}</option>
-                    ))}
-                  </select>
-                  <div className="add-color-row">
-                    {COLORS.map((c) => (
-                      <button
-                        key={c}
-                        className={`color-swatch swatch-${c}${form.color === c ? " selected" : ""}`}
-                        onClick={() => setForm((f) => ({ ...f, color: c }))}
-                      />
-                    ))}
-                  </div>
-                  <div className="add-actions">
-                    <button
-                      className="add-cancel"
-                      onClick={() => setAdding(null)}
-                    >
-                      Cancel
-                    </button>
-                    <button className="add-submit" onClick={submitAdd}>
-                      Add
-                    </button>
-                  </div>
+      {!isLoading && !isError && (
+        <div className="wp-week-grid">
+          {weekDays.map((day) => {
+            const dayActivities = activitiesByDay[day.dateStr] ?? [];
+            return (
+              <div
+                key={day.dateStr}
+                className={`wp-day-col${day.isToday ? " wp-day-today" : ""}`}
+              >
+                <div className="wp-day-header">
+                  <span className="wp-day-label">{day.label}</span>
+                  <span className="wp-day-date">{day.date}</span>
                 </div>
-              ) : (
-                <button
-                  className="planner-add-btn"
-                  onClick={() => openAdd(day)}
-                >
-                  <Plus size={14} /> Add
-                </button>
-              )}
-            </div>
-          );
-        })}
-      </div>
+
+                {dayActivities.length === 0 ? (
+                  <p className="wp-empty-day">
+                    {day.isToday ? "Heute leer" : "–"}
+                  </p>
+                ) : (
+                  dayActivities.map((act) => (
+                    <ActivityCard key={act.id} activity={act} />
+                  ))
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ActivityCard({ activity }: { activity: Activity }) {
+  const start = formatTime(activity.startTime);
+  const end = formatTime(activity.endTime);
+  const timeStr =
+    start && end ? `${start}–${end}` : start ? `ab ${start}` : null;
+
+  return (
+    <div className="wp-activity-card">
+      <span className="wp-activity-name">{activity.name}</span>
+      {timeStr && <span className="wp-activity-time">{timeStr}</span>}
+      {activity.location && (
+        <span className="wp-activity-location">📍 {activity.location}</span>
+      )}
+      {activity.participants && activity.participants.length > 0 && (
+        <div className="wp-participants">
+          {activity.participants.map((p) => (
+            <span
+              key={p.id}
+              className={`wp-participant-badge avatar-${roleColor(p.role)}`}
+            >
+              {p.name}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

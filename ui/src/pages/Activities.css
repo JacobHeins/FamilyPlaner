@@ -1,0 +1,352 @@
+/* ── Page shell ──────────────────────────────────────────────────── */
+.act-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.act-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* ── Filter row ──────────────────────────────────────────────────── */
+.act-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* ── Create button ───────────────────────────────────────────────── */
+.act-create-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background var(--transition);
+  white-space: nowrap;
+}
+.act-create-btn:hover {
+  background: var(--accent-hover);
+}
+
+/* ── Create / edit form ──────────────────────────────────────────── */
+.act-form {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.act-form-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 4px;
+}
+
+.act-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.act-form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.act-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.act-input {
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font-size: 14px;
+  outline: none;
+  transition: border-color var(--transition);
+  width: 100%;
+  box-sizing: border-box;
+}
+.act-input:focus {
+  border-color: var(--accent);
+}
+.act-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* ── Participant selector ────────────────────────────────────────── */
+.act-participant-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.act-participant-btn {
+  padding: 5px 12px;
+  border-radius: 99px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    background var(--transition),
+    color var(--transition),
+    border-color var(--transition);
+}
+.act-participant-btn.selected {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── Form actions ────────────────────────────────────────────────── */
+.act-form-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.act-btn-save {
+  padding: 9px 20px;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.act-btn-save:hover {
+  background: var(--accent-hover);
+}
+.act-btn-save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.act-btn-cancel {
+  padding: 9px 20px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.act-btn-cancel:hover {
+  background: var(--bg-hover);
+}
+
+.act-validation-error {
+  font-size: 12px;
+  color: var(--state-error-text);
+  margin-top: -8px;
+}
+
+/* ── Activity list ───────────────────────────────────────────────── */
+.act-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.act-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition);
+}
+.act-item:hover {
+  border-color: var(--accent);
+}
+
+.act-item-highlighted {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.act-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.act-item-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+.act-item:hover .act-item-actions {
+  opacity: 1;
+}
+
+.act-btn-icon {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 4px 6px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  transition:
+    color var(--transition),
+    border-color var(--transition);
+}
+.act-btn-icon:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.act-btn-icon.act-btn-delete:hover {
+  color: #e74c3c;
+  border-color: #e74c3c;
+}
+.act-btn-icon:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.act-item-editing {
+  border-color: var(--accent) !important;
+  background: var(--bg-elevated);
+}
+
+.act-item-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.act-item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.act-item-date {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.act-item-time {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.act-item-location {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.act-item-description {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.act-item-participants {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.act-participant-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 99px;
+}
+
+.act-no-participants {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ── Empty / loading / error states ─────────────────────────────── */
+.act-empty {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 40px 20px;
+  font-size: 15px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
+.act-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  padding: 24px 0;
+}
+
+.act-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--state-error-text);
+  background: var(--state-error-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  font-size: 14px;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .act-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .act-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .act-create-btn {
+    justify-content: center;
+  }
+}

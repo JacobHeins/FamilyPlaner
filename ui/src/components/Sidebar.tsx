@@ -1,11 +1,21 @@
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, X, Users, CheckSquare, Sparkles } from "lucide-react";
+import {
+  LayoutDashboard,
+  X,
+  Users,
+  CheckSquare,
+  CalendarDays,
+  Sparkles,
+  List,
+} from "lucide-react";
 import "./Sidebar.css";
 
 const nav = [
   { to: "/", icon: LayoutDashboard, label: "Übersicht" },
   { to: "/members", icon: Users, label: "Familie" },
   { to: "/tasks", icon: CheckSquare, label: "Aufgaben" },
+  { to: "/week", icon: CalendarDays, label: "Wochenplan" },
+  { to: "/activities", icon: List, label: "Aktivitäten" },
 ];
 
 interface SidebarProps {
@@ -63,7 +73,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         <div className="sidebar-footer">
           <p className="sidebar-footer-label">Verfügbare Bereiche</p>
           <p className="sidebar-footer-text">
-            Übersicht, Familienverwaltung und Aufgaben.
+            Übersicht, Wochenplan, Familie, Aufgaben und Aktivitäten.
           </p>
         </div>
       </aside>

@@ -95,6 +95,7 @@ public class ActivitiesService {
                     .toList());
     }
 
+    @Transactional
     public Result<ActivityResponse> updateActivity(Long activityId ,UpdateActivityRequest updateActivityRequest) {
         log.debug("Update activity");
 

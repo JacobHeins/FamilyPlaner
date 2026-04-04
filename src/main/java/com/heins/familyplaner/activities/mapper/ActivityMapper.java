@@ -13,6 +13,7 @@ public class ActivityMapper {
 
     public ActivityResponse toActivityResponse(Activity activity) {
         return new ActivityResponse(
+                activity.getId(),
                 activity.getName(),
                 activity.getDescription(),
                 activity.getLocation(),

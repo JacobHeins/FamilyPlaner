@@ -12,8 +12,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Entity
@@ -62,7 +63,7 @@ public class Activity {
 
     @ManyToMany
     @JoinTable(name = "activity_participants_mapping")
-    private final List<FamilyMember> participants = new ArrayList<>();
+    private final Set<FamilyMember> participants = new HashSet<>();
 
     public void Update(String name,
                        String description,
@@ -77,6 +78,7 @@ public class Activity {
         this.day = day;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.participants.clear();
         this.participants.addAll(participants);
     }
 
