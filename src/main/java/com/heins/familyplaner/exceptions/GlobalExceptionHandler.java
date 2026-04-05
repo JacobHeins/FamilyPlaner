@@ -6,6 +6,7 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import java.net.URI;
 import java.util.stream.Collectors;
@@ -21,6 +22,14 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.joining(", "));
 
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, errors);
+        problem.setTitle("Validation Failed");
+        problem.setType(URI.create("https://familyplaner.heins.com/errors/validation"));
+        return problem;
+    }
+
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ProblemDetail handleHandlerMethodValidation(HandlerMethodValidationException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Validation failure");
         problem.setTitle("Validation Failed");
         problem.setType(URI.create("https://familyplaner.heins.com/errors/validation"));
         return problem;

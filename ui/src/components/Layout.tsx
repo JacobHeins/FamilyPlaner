@@ -23,7 +23,7 @@ export default function Layout() {
           <div className="app-topbar-copy">
             <span className="app-topbar-title">FamilyPlaner</span>
             <span className="app-topbar-subtitle">
-              Übersicht, Familie und Aufgaben
+              Übersicht, Wochenplan und Aufgaben
             </span>
           </div>
         </div>

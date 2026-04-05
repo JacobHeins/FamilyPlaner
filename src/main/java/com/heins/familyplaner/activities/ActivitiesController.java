@@ -38,7 +38,7 @@ public class ActivitiesController {
             @Valid @NotNull @RequestBody CreateActivityRequest createActivityRequest
     ) {
         return switch (activitiesService.createActivity(createActivityRequest)) {
-            case Result.Success<ActivityResponse> s -> ResponseEntity.status(HttpStatus.CREATED).body(s);
+            case Result.Success<ActivityResponse> s -> ResponseEntity.status(HttpStatus.CREATED).body(s.value());
             case Result.Failure<ActivityResponse> f-> ResponseEntity.of(f.toProblemDetail()).build();
         };
     }
@@ -49,7 +49,7 @@ public class ActivitiesController {
             @Valid @NotNull @RequestBody UpdateActivityRequest updateActivityRequest
     ) {
         return switch (activitiesService.updateActivity(id, updateActivityRequest)){
-            case Result.Success<ActivityResponse> s -> ResponseEntity.status(HttpStatus.CREATED).body(s);
+            case Result.Success<ActivityResponse> s -> ResponseEntity.status(HttpStatus.CREATED).body(s.value());
             case Result.Failure<ActivityResponse> f -> ResponseEntity.of(f.toProblemDetail()).build();
         };
     }
