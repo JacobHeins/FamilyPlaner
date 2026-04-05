@@ -30,36 +30,33 @@
   background: var(--bg-elevated);
 }
 
-.type-toggle {
+/* Assignee filter */
+.te-filter-row {
   display: flex;
-  gap: 4px;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 4px;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
-.type-btn {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 5px 12px;
-  border-radius: 6px;
+.te-filter-btn {
+  padding: 5px 14px;
+  border-radius: 99px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text-secondary);
-  background: transparent;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
   transition:
     background var(--transition),
-    color var(--transition);
+    color var(--transition),
+    border-color var(--transition);
 }
-
-.type-btn:hover {
+.te-filter-btn:hover {
   color: var(--text-primary);
+  border-color: var(--accent);
 }
-
-.type-btn.active {
+.te-filter-btn.active {
   background: var(--accent);
+  border-color: var(--accent);
   color: #fff;
 }
 
@@ -170,6 +167,41 @@
   color: var(--text-secondary);
 }
 
+/* Assignee badge */
+.assignee-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.assignee-badge.avatar-blue {
+  background: var(--blue-soft);
+  color: var(--blue);
+}
+.assignee-badge.avatar-pink {
+  background: var(--pink-soft);
+  color: var(--pink);
+}
+.assignee-badge.avatar-green {
+  background: var(--green-soft);
+  color: var(--green);
+}
+.assignee-badge.avatar-orange {
+  background: var(--orange-soft);
+  color: var(--orange);
+}
+.assignee-badge.avatar-accent {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.assignee-badge.avatar-muted {
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+}
+
 .te-badge {
   font-size: 11px;
   font-weight: 700;
@@ -183,9 +215,32 @@
   background: var(--accent-soft);
   color: var(--accent);
 }
-.badge-event {
-  background: var(--orange-soft);
-  color: var(--orange);
+.badge-done {
+  background: var(--green-soft);
+  color: var(--green);
+}
+
+/* Error dismiss */
+.error-dismiss {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  border-radius: 4px;
+  color: inherit;
+  opacity: 0.7;
+}
+.error-dismiss:hover {
+  opacity: 1;
+}
+
+/* Empty link */
+.empty-link {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.empty-link:hover {
+  color: var(--accent-hover);
 }
 
 .te-delete {
@@ -211,4 +266,84 @@
 .te-delete:hover {
   background: rgba(255, 80, 80, 0.15);
   color: #ff5050;
+}
+
+/* Edit button (pencil) */
+.te-edit-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition:
+    opacity var(--transition),
+    background var(--transition),
+    color var(--transition);
+}
+
+.te-item:hover .te-edit-btn {
+  opacity: 1;
+}
+
+.te-edit-btn:hover {
+  background: var(--bg-hover);
+  color: var(--accent);
+}
+
+/* Inline edit form */
+.te-item.editing {
+  flex-direction: column;
+  align-items: stretch;
+  padding: 16px;
+  background: var(--bg-elevated);
+}
+
+.te-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.te-edit-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.te-edit-confirm-row {
+  display: flex;
+  gap: 8px;
+}
+
+.te-edit-delete {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: transparent;
+  color: #ff5050;
+  transition: background var(--transition);
+}
+
+.te-edit-delete:hover {
+  background: rgba(255, 80, 80, 0.12);
+}
+
+.te-edit-error {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: #ff5050;
+  margin: 0;
 }

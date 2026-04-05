@@ -14,12 +14,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class TodoService {
 
     private final TodoRepository todoRepository;
@@ -27,6 +29,7 @@ public class TodoService {
     private final FamilyRepository familyRepository;
     private final TodoMapper todoMapper;
 
+    @Transactional
     public Result<TodoResponse> addTask(AddTodoRequest addTodoRequest) {
         log.debug("Adding todo '{}' for familyId: {}", addTodoRequest.name(), addTodoRequest.familyId());
 
@@ -83,6 +86,7 @@ public class TodoService {
                 .toList());
     }
 
+    @Transactional
     public Result<TodoResponse> updateTodo(UpdateTodoRequest req) {
         log.debug("Updating todo id: {}", req.id());
 
@@ -109,6 +113,7 @@ public class TodoService {
         return Result.success(todoMapper.toTodoResponse(todo));
     }
 
+    @Transactional
     public Result<Void> deleteTodo(Long id) {
         log.debug("Deleting todo id: {}", id);
 
