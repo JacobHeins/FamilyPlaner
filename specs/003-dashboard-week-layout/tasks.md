@@ -14,8 +14,8 @@
 
 **Purpose**: Confirm scope and load the exact frontend files that the dashboard redesign will touch
 
-- [ ] T001 Review scope and affected modules in `specs/003-dashboard-week-layout/spec.md` and `specs/003-dashboard-week-layout/plan.md`
-- [ ] T002 Inspect the current dashboard, weekly planner, activities, and todo surfaces in `ui/src/pages/Dashboard.tsx`, `ui/src/pages/Dashboard.css`, `ui/src/pages/WeeklyPlanner.tsx`, `ui/src/pages/WeeklyPlanner.css`, `ui/src/pages/Activities.tsx`, and `ui/src/pages/Tasks.tsx`
+- [x] T001 Review scope and affected modules in `specs/003-dashboard-week-layout/spec.md` and `specs/003-dashboard-week-layout/plan.md`
+- [x] T002 Inspect the current dashboard, weekly planner, activities, and todo surfaces in `ui/src/pages/Dashboard.tsx`, `ui/src/pages/Dashboard.css`, `ui/src/pages/WeeklyPlanner.tsx`, `ui/src/pages/WeeklyPlanner.css`, `ui/src/pages/Activities.tsx`, and `ui/src/pages/Tasks.tsx`
 
 ---
 
@@ -25,9 +25,9 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 Update shared week-selection and grouping helpers for dashboard reuse in `ui/src/utils/weekUtils.ts`
-- [ ] T004 [P] Establish the stacked dashboard layout scaffold for selected-day detail, weekly overview, and open-todo sections in `ui/src/pages/Dashboard.tsx`
-- [ ] T005 [P] Prepare base styles for the stacked dashboard layout and reusable selected/today state hooks in `ui/src/pages/Dashboard.css`
+- [x] T003 Update shared week-selection and grouping helpers for dashboard reuse in `ui/src/utils/weekUtils.ts`
+- [x] T004 [P] Establish the stacked dashboard layout scaffold for selected-day detail, weekly overview, and open-todo sections in `ui/src/pages/Dashboard.tsx`
+- [x] T005 [P] Prepare base styles for the stacked dashboard layout and reusable selected/today state hooks in `ui/src/pages/Dashboard.css`
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -41,10 +41,10 @@
 
 ### Implementation for User Story 1
 
-- [ ] T006 [US1] Implement selected-day state, default current-day selection, and selected-day activity filtering in `ui/src/pages/Dashboard.tsx`
-- [ ] T007 [P] [US1] Style the selected-day detail section, selected-day heading, and selected-day activity cards in `ui/src/pages/Dashboard.css`
-- [ ] T008 [US1] Add German selected-day loading, empty, and error-state rendering to `ui/src/pages/Dashboard.tsx`
-- [ ] T009 [US1] Verify selected-day dashboard behavior with `npm run build` in `ui/` and the default-day checks in `specs/003-dashboard-week-layout/quickstart.md`
+- [x] T006 [US1] Implement selected-day state, default current-day selection, and selected-day activity filtering in `ui/src/pages/Dashboard.tsx`
+- [x] T007 [P] [US1] Style the selected-day detail section, selected-day heading, and selected-day activity cards in `ui/src/pages/Dashboard.css`
+- [x] T008 [US1] Add German selected-day loading, empty, and error-state rendering to `ui/src/pages/Dashboard.tsx`
+- [x] T009 [US1] Verify selected-day dashboard behavior with `npm run build` in `ui/` and the default-day checks in `specs/003-dashboard-week-layout/quickstart.md`
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
@@ -58,10 +58,10 @@
 
 ### Implementation for User Story 2
 
-- [ ] T010 [P] [US2] Rework the dashboard week-overview markup to render seven selectable day columns with grouped activities in `ui/src/pages/Dashboard.tsx`
-- [ ] T011 [P] [US2] Mirror the Wochenübersicht visual grammar, including selected-day and today states, in `ui/src/pages/Dashboard.css` using `ui/src/pages/WeeklyPlanner.css` as the style reference
-- [ ] T012 [US2] Align dashboard week grouping and active-day rendering logic with the existing weekly planner behavior in `ui/src/pages/Dashboard.tsx` and `ui/src/pages/WeeklyPlanner.tsx`
-- [ ] T013 [US2] Verify the embedded weekly overview with `npm run build` in `ui/` and the week-selection checks in `specs/003-dashboard-week-layout/quickstart.md`
+- [x] T010 [P] [US2] Rework the dashboard week-overview markup to render seven selectable day columns with grouped activities in `ui/src/pages/Dashboard.tsx`
+- [x] T011 [P] [US2] Mirror the Wochenübersicht visual grammar, including selected-day and today states, in `ui/src/pages/Dashboard.css` using `ui/src/pages/WeeklyPlanner.css` as the style reference
+- [x] T012 [US2] Align dashboard week grouping and active-day rendering logic with the existing weekly planner behavior in `ui/src/pages/Dashboard.tsx` and `ui/src/pages/WeeklyPlanner.tsx`
+- [x] T013 [US2] Verify the embedded weekly overview with `npm run build` in `ui/` and the week-selection checks in `specs/003-dashboard-week-layout/quickstart.md`
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
 
@@ -75,10 +75,10 @@
 
 ### Implementation for User Story 3
 
-- [ ] T014 [US3] Remove the stats grid, family-member dashboard section, and separate week-preview markup from `ui/src/pages/Dashboard.tsx`
-- [ ] T015 [P] [US3] Remove obsolete stats, family-member, and secondary-week-preview styles and reflow the dashboard into a single-column stack in `ui/src/pages/Dashboard.css`
-- [ ] T016 [US3] Retain and adapt only the open-todo overview, including German loading, empty, and error-state handling, in `ui/src/pages/Dashboard.tsx`
-- [ ] T017 [US3] Verify the simplified dashboard content with `npm run build` in `ui/` and the cleanup checks in `specs/003-dashboard-week-layout/quickstart.md`
+- [x] T014 [US3] Remove the stats grid, family-member dashboard section, and separate week-preview markup from `ui/src/pages/Dashboard.tsx`
+- [x] T015 [P] [US3] Remove obsolete stats, family-member, and secondary-week-preview styles and reflow the dashboard into a single-column stack in `ui/src/pages/Dashboard.css`
+- [x] T016 [US3] Retain and adapt only the open-todo overview, including German loading, empty, and error-state handling, in `ui/src/pages/Dashboard.tsx`
+- [x] T017 [US3] Verify the simplified dashboard content with `npm run build` in `ui/` and the cleanup checks in `specs/003-dashboard-week-layout/quickstart.md`
 
 **Checkpoint**: At this point, User Stories 1, 2, and 3 should be fully functional on the dashboard
 
@@ -92,9 +92,9 @@
 
 ### Implementation for User Story 4
 
-- [ ] T018 [US4] Preserve activity click-through from selected-day cards using selected activity identity handoff in `ui/src/pages/Dashboard.tsx`
-- [ ] T019 [P] [US4] Ensure selected activity arrival remains clear after dashboard navigation, including fallback messaging when needed, in `ui/src/pages/Activities.tsx` and `ui/src/pages/Activities.css`
-- [ ] T020 [US4] Verify selected-day activity navigation with `npm run build` in `ui/` and the activity-navigation checks in `specs/003-dashboard-week-layout/quickstart.md`
+- [x] T018 [US4] Preserve activity click-through from selected-day cards using selected activity identity handoff in `ui/src/pages/Dashboard.tsx`
+- [x] T019 [P] [US4] Ensure selected activity arrival remains clear after dashboard navigation, including fallback messaging when needed, in `ui/src/pages/Activities.tsx` and `ui/src/pages/Activities.css`
+- [x] T020 [US4] Verify selected-day activity navigation with `npm run build` in `ui/` and the activity-navigation checks in `specs/003-dashboard-week-layout/quickstart.md`
 
 **Checkpoint**: All user stories should now be independently functional
 
@@ -104,9 +104,9 @@
 
 **Purpose**: Final consistency, responsiveness, and product-surface cleanup across the affected dashboard flows
 
-- [ ] T021 [P] Review German dashboard copy, labels, and aria text across `ui/src/pages/Dashboard.tsx`, `ui/src/components/Layout.tsx`, and `ui/src/components/Sidebar.tsx`
-- [ ] T022 [P] Polish responsive spacing, selected-versus-today contrast, and visual consistency across `ui/src/pages/Dashboard.css` and `ui/src/pages/WeeklyPlanner.css`
-- [ ] T023 Run `npm run build` in `ui/` and complete the full regression flow in `specs/003-dashboard-week-layout/quickstart.md`
+- [x] T021 [P] Review German dashboard copy, labels, and aria text across `ui/src/pages/Dashboard.tsx`, `ui/src/components/Layout.tsx`, and `ui/src/components/Sidebar.tsx`
+- [x] T022 [P] Polish responsive spacing, selected-versus-today contrast, and visual consistency across `ui/src/pages/Dashboard.css` and `ui/src/pages/WeeklyPlanner.css`
+- [x] T023 Run `npm run build` in `ui/` and complete the full regression flow in `specs/003-dashboard-week-layout/quickstart.md`
 
 ---
 
