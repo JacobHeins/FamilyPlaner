@@ -28,6 +28,7 @@ As a family member, I want the top area of the dashboard to show the detailed ac
 3. **Given** the selected day contains no activities, **When** the top activity box is shown, **Then** it displays a clear German-language empty state for that selected day rather than showing stale data from another day.
 4. **Given** the dashboard is reopened or refreshed on the same day, **When** no day has been manually selected yet in that session, **Then** the current day is selected again by default.
 5. **Given** the user views the dashboard on a narrow mobile screen, **When** the selected day's activity box is displayed, **Then** the activity details remain readable without horizontal scrolling on the primary content.
+6. **Given** an activity in the selected-day detail box has one or more participants, **When** the activity is displayed, **Then** each participant appears as a colour pill showing their full name, using the same role-based colour coding visible on the weekly overview and todo overview.
 
 ---
 
@@ -113,6 +114,7 @@ As a family member, I want to open an activity from the selected day's detail bo
 - **FR-016**: All user-facing dashboard text, including headings, labels, empty states, and error messages, MUST be written in German.
 - **FR-017**: The redesigned dashboard MUST remain usable across desktop, tablet, and smartphone screen sizes without horizontal scrolling on primary content.
 - **FR-018**: The feature MUST stay within the approved interface scope and reuse currently available family, activity, and todo data rather than introducing new backend requirements.
+- **FR-019**: Each participant shown in the selected-day activity overview MUST be rendered as a full-name colour pill using the same visual style as participants are shown in the weekly overview and assignees are shown in the todo overview — including the role-based colour coding applied consistently across the product.
 
 ### Key Entities _(include if feature involves data)_
 

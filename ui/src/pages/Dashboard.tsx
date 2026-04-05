@@ -156,16 +156,14 @@ export default function Dashboard() {
                   </div>
                   {act.participants.length > 0 && (
                     <div className="dash-act-badges">
-                      {act.participants.slice(0, 3).map((p) => (
-                        <span key={p.id} className="dash-act-badge">
-                          {p.name.charAt(0).toUpperCase()}
+                      {act.participants.map((p) => (
+                        <span
+                          key={p.id}
+                          className={`dash-act-badge avatar-${roleColor(p.role, 0)}`}
+                        >
+                          {p.name}
                         </span>
                       ))}
-                      {act.participants.length > 3 && (
-                        <span className="dash-act-badge">
-                          +{act.participants.length - 3}
-                        </span>
-                      )}
                     </div>
                   )}
                   <ArrowRight size={14} className="dash-act-arrow" />
@@ -232,7 +230,9 @@ export default function Dashboard() {
                     ))
                   )}
                   {dayActs.length > 3 && (
-                    <p className="dash-day-more">+{dayActs.length - 3} weitere</p>
+                    <p className="dash-day-more">
+                      +{dayActs.length - 3} weitere
+                    </p>
                   )}
                 </div>
               );

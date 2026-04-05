@@ -34,4 +34,5 @@
 - Validation completed in one iteration.
 - The specification is bounded to dashboard restructuring and reuse of existing product data only.
 - No clarification questions were required because the requested layout behavior and removals were specific enough to define directly.
+- **2026-04-05 amendment**: Added FR-019 and US1 acceptance scenario 6 to require participant full-name colour pills in the selected-day activity overview, consistent with the weekly overview and todo overview styling already present in the product.
 - Ready for `/speckit.plan`.
