@@ -11,7 +11,7 @@ Sync Impact Report
 - Follow-up TODOs: none
 -->
 
-# FamilyPlaner Constitution
+# FamilyPlanner Constitution
 
 ## Core Principles
 
@@ -61,7 +61,7 @@ All user-facing text in the SPA MUST be written in German. This covers every sur
 text is visible to the end user: page titles, section headings, button labels, placeholder
 text, aria-labels, empty states, loading indicators, error messages, and status badges.
 New pages, components, or copy introduced in any future feature MUST follow the same rule
-without exception. Rationale: the FamilyPlaner product targets a German-speaking household;
+without exception. Rationale: the FamilyPlanner product targets a German-speaking household;
 consistent language across the entire UI is a non-negotiable product requirement.
 
 ## Technical Boundaries

@@ -1,0 +1,197 @@
+package com.heins.familyplanner.activities;
+
+import com.heins.familyplanner.activities.dtos.ActivityResponse;
+import com.heins.familyplanner.exceptions.Result;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@WebMvcTest(ActivitiesController.class)
+@ImportAutoConfiguration(exclude = com.heins.familyplanner.configuration.JpaConfig.class)
+public class ActivitiesControllerTest {
+
+    @Autowired
+    MockMvc mockMvc;
+
+    @MockitoBean
+    ActivitiesService activitiesService;
+
+    private final LocalDate futureDate = LocalDate.now().plusDays(7);
+
+    private ActivityResponse sampleResponse() {
+        return new ActivityResponse(1L, "Football", null, null, futureDate, null, null, 1L, List.of());
+    }
+
+    // -------------------------------------------------------
+    // GET /api/activities
+    // -------------------------------------------------------
+
+    @Test
+    void getActivities_returnsOk_whenFamilyExists() throws Exception {
+        when(activitiesService.getActivities(1L, null)).thenReturn(Result.success(List.of(sampleResponse())));
+
+        mockMvc.perform(get("/api/activities").param("familyId", "1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].name").value("Football"));
+
+        verify(activitiesService).getActivities(1L, null);
+    }
+
+    @Test
+    void getActivities_returnsNotFound_whenFamilyMissing() throws Exception {
+        when(activitiesService.getActivities(99L, null)).thenReturn(Result.notFound("Family not found: 99"));
+
+        mockMvc.perform(get("/api/activities").param("familyId", "99"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.detail").value("Family not found: 99"));
+    }
+
+    @Test
+    void getActivities_filtersByMemberId_whenProvided() throws Exception {
+        when(activitiesService.getActivities(1L, 10L)).thenReturn(Result.success(List.of(sampleResponse())));
+
+        mockMvc.perform(get("/api/activities").param("familyId", "1").param("memberId", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1));
+
+        verify(activitiesService).getActivities(1L, 10L);
+    }
+
+    // -------------------------------------------------------
+    // POST /api/activities
+    // -------------------------------------------------------
+
+    @Test
+    void createActivity_returnsCreated_whenValid() throws Exception {
+        when(activitiesService.createActivity(any())).thenReturn(Result.success(sampleResponse()));
+
+        String json = """
+                { "name": "Football", "day": "%s", "familyId": 1 }
+                """.formatted(futureDate);
+
+        mockMvc.perform(post("/api/activities")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Football"));
+    }
+
+    @Test
+    void createActivity_returnsBadRequest_whenNameMissing() throws Exception {
+        mockMvc.perform(post("/api/activities")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{ \"day\": \"" + futureDate + "\", \"familyId\": 1 }"))
+                .andExpect(status().isBadRequest());
+
+        verify(activitiesService, never()).createActivity(any());
+    }
+
+    @Test
+    void createActivity_returnsBadRequest_whenFamilyIdMissing() throws Exception {
+        mockMvc.perform(post("/api/activities")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{ \"name\": \"Football\", \"day\": \"" + futureDate + "\" }"))
+                .andExpect(status().isBadRequest());
+
+        verify(activitiesService, never()).createActivity(any());
+    }
+
+    @Test
+    void createActivity_returnsNotFound_whenFamilyMissing() throws Exception {
+        when(activitiesService.createActivity(any())).thenReturn(Result.notFound("Family with id: 99 not found."));
+
+        String json = """
+                { "name": "Football", "day": "%s", "familyId": 99 }
+                """.formatted(futureDate);
+
+        mockMvc.perform(post("/api/activities")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.detail").value("Family with id: 99 not found."));
+    }
+
+    // -------------------------------------------------------
+    // PUT /api/activities/{id}
+    // -------------------------------------------------------
+
+    @Test
+    void updateActivity_returnsCreated_whenValid() throws Exception {
+        ActivityResponse updated = new ActivityResponse(1L, "Swimming", null, null, futureDate, null, null, 1L, List.of());
+        when(activitiesService.updateActivity(eq(1L), any())).thenReturn(Result.success(updated));
+
+        String json = """
+                { "name": "Swimming", "day": "%s" }
+                """.formatted(futureDate);
+
+        mockMvc.perform(put("/api/activities/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value("Swimming"));
+    }
+
+    @Test
+    void updateActivity_returnsBadRequest_whenNameMissing() throws Exception {
+        mockMvc.perform(put("/api/activities/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{ \"day\": \"" + futureDate + "\" }"))
+                .andExpect(status().isBadRequest());
+
+        verify(activitiesService, never()).updateActivity(any(), any());
+    }
+
+    @Test
+    void updateActivity_returnsNotFound_whenActivityMissing() throws Exception {
+        when(activitiesService.updateActivity(eq(99L), any())).thenReturn(Result.notFound("Activity with id: 99 not found."));
+
+        String json = """
+                { "name": "Swimming", "day": "%s" }
+                """.formatted(futureDate);
+
+        mockMvc.perform(put("/api/activities/99")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.detail").value("Activity with id: 99 not found."));
+    }
+
+    // -------------------------------------------------------
+    // DELETE /api/activities/{id}
+    // -------------------------------------------------------
+
+    @Test
+    void deleteActivity_returnsNoContent_whenActivityExists() throws Exception {
+        when(activitiesService.deleteActivity(1L)).thenReturn(Result.success(null));
+
+        mockMvc.perform(delete("/api/activities/1"))
+                .andExpect(status().isNoContent());
+
+        verify(activitiesService).deleteActivity(1L);
+    }
+
+    @Test
+    void deleteActivity_returnsNotFound_whenActivityMissing() throws Exception {
+        when(activitiesService.deleteActivity(99L)).thenReturn(Result.notFound("Activity with id: 99 does not exist"));
+
+        mockMvc.perform(delete("/api/activities/99"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.detail").value("Activity with id: 99 does not exist"));
+    }
+}

@@ -62,10 +62,10 @@ specs/[###-feature]/
 ```text
 src/
 ├── main/
-│   ├── java/com/heins/familyplaner/
+│   ├── java/com/heins/familyplanner/
 │   └── resources/
 └── test/
-    └── java/com/heins/familyplaner/
+    └── java/com/heins/familyplanner/
 
 ui/
 ├── src/

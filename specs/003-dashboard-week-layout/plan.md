@@ -5,7 +5,7 @@
 
 ## Summary
 
-Refocus the FamilyPlaner dashboard around one selectable day at a time. The dashboard
+Refocus the FamilyPlanner dashboard around one selectable day at a time. The dashboard
 becomes a three-zone page:
 
 1. **Selected-day activity detail** at the top, defaulting to today and updating when the

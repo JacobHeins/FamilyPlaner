@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Define the user-facing route contract for the FamilyPlaner dashboard SPA and the backend data dependencies the frontend may consume without extending backend scope.
+Define the user-facing route contract for the FamilyPlanner dashboard SPA and the backend data dependencies the frontend may consume without extending backend scope.
 
 ## Route Contract
 
