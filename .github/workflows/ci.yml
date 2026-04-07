@@ -67,7 +67,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository }}/family-planer
+          images: ghcr.io/${{ github.repository }}/family-planner
           tags: |
             # Tag with full semver (v1.2.3 → 1.2.3)
             type=semver,pattern={{version}}

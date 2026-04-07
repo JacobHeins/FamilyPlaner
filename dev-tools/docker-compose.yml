@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:16
-    container_name: familyplaner-db
+    container_name: familyplanner-db
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USERNAME}

@@ -10,10 +10,10 @@
     </parent>
 
     <groupId>com.heins</groupId>
-    <artifactId>FamilyPlaner</artifactId>
+    <artifactId>FamilyPlanner</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>FamilyPlaner</name>
-    <description>FamilyPlaner</description>
+    <name>FamilyPlanner</name>
+    <description>FamilyPlanner</description>
 
     <properties>
         <java.version>25</java.version>

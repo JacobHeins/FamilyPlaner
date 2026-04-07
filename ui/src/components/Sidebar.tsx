@@ -39,7 +39,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
               <Sparkles size={20} />
             </div>
             <div>
-              <span className="sidebar-brand-name">FamilyPlaner</span>
+              <span className="sidebar-brand-name">FamilyPlanner</span>
               <p className="sidebar-brand-tagline">Familienplaner</p>
             </div>
           </div>

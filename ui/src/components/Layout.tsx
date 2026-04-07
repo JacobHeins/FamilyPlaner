@@ -21,7 +21,7 @@ export default function Layout() {
             <Menu size={18} />
           </button>
           <div className="app-topbar-copy">
-            <span className="app-topbar-title">FamilyPlaner</span>
+            <span className="app-topbar-title">FamilyPlanner</span>
             <span className="app-topbar-subtitle">
               Übersicht, Wochenplan und Aufgaben
             </span>

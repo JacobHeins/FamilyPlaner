@@ -1,5 +1,5 @@
 {
-  "name": "FamilyPlaner",
+  "name": "FamilyPlanner",
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
   "workspaceFolder": "/workspace",

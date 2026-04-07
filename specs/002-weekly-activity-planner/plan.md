@@ -5,7 +5,7 @@
 
 ## Summary
 
-Extend the FamilyPlaner SPA with activity planning centered on the dashboard as the
+Extend the FamilyPlanner SPA with activity planning centered on the dashboard as the
 primary entry point. The feature delivers three surfaces:
 
 1. **Dashboard** — a today-activity section that is the most visually dominant section on

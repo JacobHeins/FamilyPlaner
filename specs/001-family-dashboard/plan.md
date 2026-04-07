@@ -59,10 +59,10 @@ _GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 ```text
 /workspace/src/
 ├── main/
-│   ├── java/com/heins/familyplaner/
+│   ├── java/com/heins/familyplanner/
 │   └── resources/
 └── test/
-    └── java/com/heins/familyplaner/
+    └── java/com/heins/familyplanner/
 
 /workspace/ui/
 ├── src/
