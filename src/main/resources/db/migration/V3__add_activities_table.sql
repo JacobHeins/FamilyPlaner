@@ -29,15 +29,15 @@ ALTER TABLE ONLY public.activities
     REFERENCES public.families(id);
 
 CREATE TABLE public.activity_participants_mapping (
-    activities_id bigint NOT NULL,
+    activity_id bigint NOT NULL,
     participants_id bigint NOT NULL
 );
 
 ALTER TABLE ONLY public.activity_participants_mapping
-    ADD CONSTRAINT activity_participants_mapping_pkey PRIMARY KEY (activities_id, participants_id);
+    ADD CONSTRAINT activity_participants_mapping_pkey PRIMARY KEY (activity_id, participants_id);
 
 ALTER TABLE ONLY public.activity_participants_mapping
-    ADD CONSTRAINT fk_apm_activity FOREIGN KEY (activities_id)
+    ADD CONSTRAINT fk_apm_activity FOREIGN KEY (activity_id)
     REFERENCES public.activities(id);
 
 ALTER TABLE ONLY public.activity_participants_mapping
