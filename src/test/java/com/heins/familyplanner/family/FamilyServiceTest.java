@@ -45,11 +45,10 @@ public class FamilyServiceTest {
                 familyRepository,
                 familyMemberRepository,
                 familyMapper,
-                familyRoleMapper
-        );
+                familyRoleMapper);
     }
 
-    //-------------addFamily-------------
+    // -------------addFamily-------------
     @Test
     void addFamily_saveAndReturnsDtos() {
         Family saved = new Family("Heins");
@@ -63,34 +62,19 @@ public class FamilyServiceTest {
         verify(familyRepository).save(any(Family.class));
     }
 
-    //-------------getAllFamilies---------
-    @Test
-    void getAllFamilies_returnDtos() {
-        Family heins = new Family("Heins");
-        ReflectionTestUtils.setField(heins, "id", 1L);
-        Family lehnert = new Family("Lehner");
-        ReflectionTestUtils.setField(lehnert, "id", 2L);
+    // -------------getAllFamilies---------
+    // getAllFamilies endpoint has been removed — no corresponding service test
 
-        when(familyRepository.findAll()).thenReturn(List.of(heins, lehnert));
-
-        var result = familyService.getAllFamilies();
-
-        assertEquals(2, result.size());
-        assertEquals("Heins", result.getFirst().name());
-        assertEquals("Lehner", result.get(1).name());
-        verify(familyRepository).findAll();
-    }
-
-    //-------------updateFamily---------
+    // -------------updateFamily---------
     @Test
     void updateFamily_updatesNameAndReturnsDto() {
         Family existing = new Family("Heins");
         ReflectionTestUtils.setField(existing, "id", 1L);
-        when(familyRepository.findById(1L)).thenReturn(Optional.of(existing));
+        when(familyRepository.findByIdAndAccountId(1L, 1L)).thenReturn(Optional.of(existing));
         when(familyRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
         UpdateFamilyRequest request = new UpdateFamilyRequest("Heins Family");
-        Result<FamilyResponse> result = familyService.updateFamily(1L, request);
+        Result<FamilyResponse> result = familyService.updateFamily(1L, 1L, request);
 
         assertInstanceOf(Result.Success.class, result);
         FamilyResponse response = ((Result.Success<FamilyResponse>) result).value();
@@ -100,26 +84,26 @@ public class FamilyServiceTest {
 
     @Test
     void updateFamily_returnsNotFound_whenFamilyMissing() {
-        when(familyRepository.findById(99L)).thenReturn(Optional.empty());
+        when(familyRepository.findByIdAndAccountId(99L, 1L)).thenReturn(Optional.empty());
 
         UpdateFamilyRequest request = new UpdateFamilyRequest("Ghost Family");
-        Result<FamilyResponse> result = familyService.updateFamily(99L, request);
+        Result<FamilyResponse> result = familyService.updateFamily(99L, 1L, request);
 
         assertInstanceOf(Result.Failure.class, result);
         verify(familyRepository, never()).save(any());
     }
 
-    //----------------addFamilyMembers-----------
+    // ----------------addFamilyMembers-----------
     @Test
     void addFamilyMember_addsFamilyMemberAndSavesFamily() {
         Family family = new Family("Heins");
         ReflectionTestUtils.setField(family, "id", 1L);
-        when(familyRepository.findById(1L)).thenReturn(Optional.of(family));
+        when(familyRepository.findByIdAndAccountId(1L, 1L)).thenReturn(Optional.of(family));
         when(familyMemberRepository.save(any())).thenAnswer(i -> i.getArgument(0));
         when(familyRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
         AddFamilyMemberRequest request = new AddFamilyMemberRequest("Jacob", FamilyRoleDto.DAD);
-        Result<FamilyResponse> result = familyService.addFamilyMember(1L, request);
+        Result<FamilyResponse> result = familyService.addFamilyMember(1L, 1L, request);
 
         assertInstanceOf(Result.Success.class, result);
         FamilyResponse response = ((Result.Success<FamilyResponse>) result).value();
@@ -134,10 +118,10 @@ public class FamilyServiceTest {
 
     @Test
     void addFamilyMember_returnsNotFound_whenFamilyMissing() {
-        when(familyRepository.findById(123L)).thenReturn(Optional.empty());
+        when(familyRepository.findByIdAndAccountId(123L, 1L)).thenReturn(Optional.empty());
 
         AddFamilyMemberRequest request = new AddFamilyMemberRequest("Jacob", FamilyRoleDto.DAD);
-        Result<FamilyResponse> result = familyService.addFamilyMember(123L, request);
+        Result<FamilyResponse> result = familyService.addFamilyMember(123L, 1L, request);
 
         assertInstanceOf(Result.Failure.class, result);
         Result.Failure<FamilyResponse> failure = (Result.Failure<FamilyResponse>) result;

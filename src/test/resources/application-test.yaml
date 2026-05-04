@@ -3,10 +3,14 @@ spring:
     enabled: false
 
   datasource:
-    url: jdbc:h2:mem:testdb;MODE=PostgreSQL
+    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;NON_KEYWORDS=DAY
     driver-class-name: org.h2.Driver
 
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: create-drop
+
+jwt:
+  secret: dGVzdC1zZWNyZXQta2V5LXRoYXQtaXMtYXQtbGVhc3QtMjU2LWJpdHMtbG9uZw==
+  expiration-ms: 86400000

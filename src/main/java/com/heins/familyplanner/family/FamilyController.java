@@ -3,7 +3,6 @@ package com.heins.familyplanner.family;
 import com.heins.familyplanner.accounts.entities.FamilyAccount;
 import com.heins.familyplanner.exceptions.Result;
 import com.heins.familyplanner.family.dtos.AddFamilyMemberRequest;
-import com.heins.familyplanner.family.dtos.AddFamilyRequestRequest;
 import com.heins.familyplanner.family.dtos.FamilyResponse;
 import com.heins.familyplanner.family.dtos.UpdateFamilyRequest;
 import io.swagger.v3.oas.annotations.Operation;
