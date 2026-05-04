@@ -143,6 +143,21 @@ public class FamilyControllerTest {
                 verify(familyService, never()).updateFamily(any(), any(), any());
         }
 
+        @Test
+        void updateFamily_returnsForbidden_whenFamilyDoesNotBelongToAccount() throws Exception {
+                String json = """
+                                { "name": "Other Family" }
+                                """;
+
+                mockMvc.perform(put("/api/families/99")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json)
+                                .header("Authorization", TOKEN))
+                                .andExpect(status().isForbidden());
+
+                verify(familyService, never()).updateFamily(any(), any(), any());
+        }
+
         // ---------------------------------------------------------
         // POST /api/families/{id}/members — valid request
         // ---------------------------------------------------------
@@ -161,6 +176,21 @@ public class FamilyControllerTest {
                                 .header("Authorization", TOKEN))
                                 .andExpect(status().isCreated())
                                 .andExpect(jsonPath("$.name").value("Heins"));
+        }
+
+        @Test
+        void addFamilyMember_returnsForbidden_whenFamilyDoesNotBelongToAccount() throws Exception {
+                String json = """
+                                { "name": "Jacob", "role": "DAD" }
+                                """;
+
+                mockMvc.perform(post("/api/families/99/members")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json)
+                                .header("Authorization", TOKEN))
+                                .andExpect(status().isForbidden());
+
+                verify(familyService, never()).addFamilyMember(any(), any(), any());
         }
 
         @Test

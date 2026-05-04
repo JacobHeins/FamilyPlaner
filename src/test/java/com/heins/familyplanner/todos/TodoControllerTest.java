@@ -203,6 +203,20 @@ public class TodoControllerTest {
         // DELETE /api/todos/{id}
         // -------------------------------------------------------
         @Test
+        void addTodo_returnsForbidden_whenFamilyIdDoesNotMatchAccount() throws Exception {
+                mockMvc.perform(post("/api/todos")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{ \"name\": \"Buy milk\", \"familyId\": 99 }")
+                                .header("Authorization", TOKEN))
+                                .andExpect(status().isForbidden());
+
+                verify(todoService, never()).addTask(any());
+        }
+
+        // -------------------------------------------------------
+        // DELETE /api/todos/{id}
+        // -------------------------------------------------------
+        @Test
         void deleteTodo_returnsNoContent_whenTodoExists() throws Exception {
                 when(todoService.deleteTodo(any(), any())).thenReturn(Result.success(null));
 
@@ -211,5 +225,15 @@ public class TodoControllerTest {
                                 .andExpect(status().isNoContent());
 
                 verify(todoService).deleteTodo(1L, 1L);
+        }
+
+        @Test
+        void deleteTodo_returnsNotFound_whenTodoMissing() throws Exception {
+                when(todoService.deleteTodo(any(), any())).thenReturn(Result.notFound("Todo not found: 99"));
+
+                mockMvc.perform(delete("/api/todos/99")
+                                .header("Authorization", TOKEN))
+                                .andExpect(status().isNotFound())
+                                .andExpect(jsonPath("$.detail").value("Todo not found: 99"));
         }
 }

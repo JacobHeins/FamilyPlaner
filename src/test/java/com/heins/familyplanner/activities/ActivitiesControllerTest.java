@@ -262,4 +262,19 @@ public class ActivitiesControllerTest {
                                 .andExpect(status().isNotFound())
                                 .andExpect(jsonPath("$.detail").value("Activity with id: 99 does not exist"));
         }
+
+        @Test
+        void createActivity_returnsForbidden_whenFamilyIdDoesNotMatchAccount() throws Exception {
+                String json = """
+                                { "name": "Football", "day": "%s", "familyId": 99 }
+                                """.formatted(futureDate);
+
+                mockMvc.perform(post("/api/activities")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json)
+                                .header("Authorization", TOKEN))
+                                .andExpect(status().isForbidden());
+
+                verify(activitiesService, never()).createActivity(any(), any());
+        }
 }

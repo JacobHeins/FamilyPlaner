@@ -128,4 +128,27 @@ public class FamilyServiceTest {
         assertEquals(Result.ErrorType.NOT_FOUND, failure.errorType());
         assertEquals("Family not found with id: 123", failure.error());
     }
+
+    // ----------------getFamily-----------
+    @Test
+    void getFamily_returnsFamily_whenFound() {
+        Family family = new Family("Heins");
+        ReflectionTestUtils.setField(family, "id", 1L);
+        when(familyRepository.findByIdAndAccountId(1L, 1L)).thenReturn(Optional.of(family));
+
+        Result<FamilyResponse> result = familyService.getFamily(1L, 1L);
+
+        assertInstanceOf(Result.Success.class, result);
+        assertEquals("Heins", ((Result.Success<FamilyResponse>) result).value().name());
+    }
+
+    @Test
+    void getFamily_returnsNotFound_whenFamilyMissing() {
+        when(familyRepository.findByIdAndAccountId(99L, 1L)).thenReturn(Optional.empty());
+
+        Result<FamilyResponse> result = familyService.getFamily(99L, 1L);
+
+        assertInstanceOf(Result.Failure.class, result);
+        assertEquals(Result.ErrorType.NOT_FOUND, ((Result.Failure<FamilyResponse>) result).errorType());
+    }
 }
