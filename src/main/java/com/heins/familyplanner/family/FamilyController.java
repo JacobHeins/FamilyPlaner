@@ -1,5 +1,6 @@
 package com.heins.familyplanner.family;
 
+import com.heins.familyplanner.accounts.entities.FamilyAccount;
 import com.heins.familyplanner.exceptions.Result;
 import com.heins.familyplanner.family.dtos.AddFamilyMemberRequest;
 import com.heins.familyplanner.family.dtos.AddFamilyRequestRequest;
@@ -12,9 +13,8 @@ import jakarta.validation.Valid;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("api/families")
@@ -27,19 +27,19 @@ public class FamilyController {
         this.familyService = familyService;
     }
 
-    @Operation(summary = "Get all families")
+    @Operation(summary = "Get the family information for a specific family")
     @ApiResponse(responseCode = "200", description = "List of all families")
-    @GetMapping
-    public List<FamilyResponse> getAllFamilies() {
-        return familyService.getAllFamilies();
-    }
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getFamily(
+            @PathVariable Long id,
+            @AuthenticationPrincipal FamilyAccount account) {
 
-    @Operation(summary = "Create a new family")
-    @PostMapping
-    public ResponseEntity<?> addFamily(
-            @RequestBody @NonNull @Valid AddFamilyRequestRequest request) {
-        return switch (familyService.addFamily(request.name())) {
-            case Result.Success<FamilyResponse> s -> ResponseEntity.status(HttpStatus.CREATED).body(s.value());
+        if (!account.getFamily().getId().equals(id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        return switch (familyService.getFamily(id, account.getId())) {
+            case Result.Success<FamilyResponse> s -> ResponseEntity.status(HttpStatus.OK).body(s.value());
             case Result.Failure<FamilyResponse> f -> ResponseEntity.of(f.toProblemDetail()).build();
         };
     }
@@ -48,8 +48,14 @@ public class FamilyController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateFamily(
             @PathVariable Long id,
-            @RequestBody @NonNull @Valid UpdateFamilyRequest request) {
-        return switch ( familyService.updateFamily(id, request)) {
+            @RequestBody @NonNull @Valid UpdateFamilyRequest request,
+            @AuthenticationPrincipal FamilyAccount account) {
+
+        if (!account.getFamily().getId().equals(id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        return switch (familyService.updateFamily(id, account.getId(), request)) {
             case Result.Success<FamilyResponse> s -> ResponseEntity.status(HttpStatus.CREATED).body(s.value());
             case Result.Failure<FamilyResponse> f -> ResponseEntity.of(f.toProblemDetail()).build();
         };
@@ -59,8 +65,14 @@ public class FamilyController {
     @PostMapping("/{id}/members")
     public ResponseEntity<?> addPersonToFamily(
             @PathVariable Long id,
-            @RequestBody @NonNull @Valid AddFamilyMemberRequest request) {
-        return switch (familyService.addFamilyMember(id, request)) {
+            @RequestBody @NonNull @Valid AddFamilyMemberRequest request,
+            @AuthenticationPrincipal FamilyAccount account) {
+
+        if (!account.getFamily().getId().equals(id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        return switch (familyService.addFamilyMember(id, account.getId(), request)) {
             case Result.Success<FamilyResponse> s -> ResponseEntity.status(HttpStatus.CREATED).body(s.value());
             case Result.Failure<FamilyResponse> f -> ResponseEntity.of(f.toProblemDetail()).build();
         };

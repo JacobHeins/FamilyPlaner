@@ -2,6 +2,7 @@ package com.heins.familyplanner.activities;
 
 import com.heins.familyplanner.activities.dtos.ActivityResponse;
 import com.heins.familyplanner.activities.dtos.CreateActivityRequest;
+import com.heins.familyplanner.activities.dtos.GetActivitiesRequest;
 import com.heins.familyplanner.activities.dtos.UpdateActivityRequest;
 import com.heins.familyplanner.activities.entities.Activity;
 import com.heins.familyplanner.activities.mapper.ActivityMapper;
@@ -11,7 +12,6 @@ import com.heins.familyplanner.family.entities.Family;
 import com.heins.familyplanner.family.entities.FamilyMember;
 import com.heins.familyplanner.family.repositories.FamilyMemberRepository;
 import com.heins.familyplanner.family.repositories.FamilyRepository;
-import com.heins.familyplanner.todos.entities.Todo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
@@ -33,21 +33,21 @@ public class ActivitiesService {
     private final ActivityMapper activityMapper;
 
     @Transactional
-    public Result<ActivityResponse> createActivity(CreateActivityRequest createActivityRequest) {
+    public Result<ActivityResponse> createActivity(CreateActivityRequest createActivityRequest, Long accountId) {
         log.debug("Add a new activity");
 
-        Optional<Family> familyOpt = familyRepository.findById(createActivityRequest.familyId());
-        if(familyOpt.isEmpty()){
+        Optional<Family> familyOpt = familyRepository.findByIdAndAccountId(createActivityRequest.familyId(), accountId);
+        if (familyOpt.isEmpty()) {
             log.error("Family with id: {} not found.", createActivityRequest.familyId());
             return Result.notFound("Family with id: " + createActivityRequest.familyId() + " not found.");
         }
 
         List<FamilyMember> participants = new ArrayList<>();
-        if(createActivityRequest.participants() != null){
-            for(Long participantId : createActivityRequest.participants()){
+        if (createActivityRequest.participants() != null) {
+            for (Long participantId : createActivityRequest.participants()) {
                 Optional<FamilyMember> familyMemberOpt = familyMemberRepository.findById(participantId);
 
-                if(familyMemberOpt.isEmpty()){
+                if (familyMemberOpt.isEmpty()) {
                     log.warn("Family member with id: {} not found and will not be added. ", participantId);
                     continue;
                 }
@@ -70,53 +70,53 @@ public class ActivitiesService {
         return Result.success(activityMapper.toActivityResponse(newActivity));
     }
 
-    public Result<List<ActivityResponse>> getActivities(Long familyId, Long familyMemberId) {
-        log.debug("Fetching Activities for familyId: {}, familyMemberId: {}", familyId, familyMemberId);
+    public Result<List<ActivityResponse>> getActivities(GetActivitiesRequest request, Long accountId) {
+        log.debug("Fetching Activities for familyId: {}, familyMemberId: {}", request.familyId(),
+                request.familyMemberId());
 
-        if (!familyRepository.existsById(familyId)) {
-            log.warn("Family not found: {}", familyId);
-            return Result.notFound("Family not found: " + familyId);
+        if (familyRepository.findByIdAndAccountId(request.familyId(), accountId).isEmpty()) {
+            log.warn("Family not found: {}", request.familyId());
+            return Result.notFound("Family not found: " + request.familyId());
         }
 
         Specification<Activity> spec = (_, _, _) -> null;
 
-        spec = spec.and((root, _, cb) ->
-                cb.equal(root.get("family").get("id"), familyId));
+        spec = spec.and((root, _, cb) -> cb.equal(root.get("family").get("id"), request.familyId()));
 
-        if (familyMemberId != null) {
-            spec = spec.and((root, _, cb) ->
-                    cb.equal(root.get("assignee").get("id"), familyMemberId));
+        if (request.familyMemberId() != null) {
+            spec = spec.and((root, _, cb) -> cb.equal(root.get("assignee").get("id"), request.familyMemberId()));
         }
 
         return Result.success(
                 activitiesRepository.findAll(spec)
-                    .stream()
-                    .map(activityMapper::toActivityResponse)
-                    .toList());
+                        .stream()
+                        .map(activityMapper::toActivityResponse)
+                        .toList());
     }
 
     @Transactional
-    public Result<ActivityResponse> updateActivity(Long activityId ,UpdateActivityRequest updateActivityRequest) {
+    public Result<ActivityResponse> updateActivity(Long activityId, UpdateActivityRequest updateActivityRequest,
+            Long familyId) {
         log.debug("Update activity");
 
+        Optional<Activity> activityOpt = activitiesRepository.findByIdAndFamily_Id(activityId, familyId);
+        if (activityOpt.isEmpty()) {
+            log.warn("Activity with id: {} not found.", activityId);
+            return Result.notFound("Activity with id: " + activityId + " not found.");
+        }
+
         List<FamilyMember> participants = new ArrayList<>();
-        if(updateActivityRequest.participants() != null){
-            for(Long participantId : updateActivityRequest.participants()){
+        if (updateActivityRequest.participants() != null) {
+            for (Long participantId : updateActivityRequest.participants()) {
                 Optional<FamilyMember> familyMemberOpt = familyMemberRepository.findById(participantId);
 
-                if(familyMemberOpt.isEmpty()){
+                if (familyMemberOpt.isEmpty()) {
                     log.warn("Family member with id: {} not found and will not be added. ", participantId);
                     continue;
                 }
 
                 familyMemberOpt.ifPresent(participants::add);
             }
-        }
-
-        Optional<Activity> activityOpt = activitiesRepository.findById(activityId);
-        if(activityOpt.isEmpty()){
-            log.warn("Activity with id: {} not found.", activityId);
-            return Result.notFound("Activity with id: " + activityId + " not found.");
         }
 
         Activity activity = activityOpt.get();
@@ -134,10 +134,10 @@ public class ActivitiesService {
     }
 
     @Transactional
-    public Result<Void> deleteActivity(Long activityId) {
+    public Result<Void> deleteActivity(Long activityId, Long familyId) {
         log.debug("Delete activity with id: {}", activityId);
 
-        if (!activitiesRepository.existsById(activityId)) {
+        if (!activitiesRepository.existsByIdAndFamily_Id(activityId, familyId)) {
             log.error("Activity with id: {} does not exist", activityId);
             return Result.notFound("Activity with id: " + activityId + " does not exist");
         }
