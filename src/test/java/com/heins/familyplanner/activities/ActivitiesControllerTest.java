@@ -78,8 +78,7 @@ public class ActivitiesControllerTest {
                                 .thenReturn(Result.success(List.of(sampleResponse())));
 
                 mockMvc.perform(get("/api/activities")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("{ \"familyId\": 1 }")
+                                .param("familyId", "1")
                                 .header("Authorization", TOKEN))
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$.length()").value(1))
@@ -94,8 +93,7 @@ public class ActivitiesControllerTest {
                 when(activitiesService.getActivities(any(), any())).thenReturn(Result.notFound("Family not found: 1"));
 
                 mockMvc.perform(get("/api/activities")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("{ \"familyId\": 1 }")
+                                .param("familyId", "1")
                                 .header("Authorization", TOKEN))
                                 .andExpect(status().isNotFound())
                                 .andExpect(jsonPath("$.detail").value("Family not found: 1"));
@@ -104,10 +102,12 @@ public class ActivitiesControllerTest {
         @Test
         void getActivities_returnsForbidden_whenFamilyIdDoesNotMatchAccount() throws Exception {
                 mockMvc.perform(get("/api/activities")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("{ \"familyId\": 99 }")
+                                .param("familyId", "99")
                                 .header("Authorization", TOKEN))
-                                .andExpect(status().isForbidden());
+                                .andExpect(status().isForbidden())
+                                .andExpect(jsonPath("$.detail").value("Family access is not permitted"))
+                                .andExpect(jsonPath("$.type")
+                                                .value("https://familyplanner.heins.com/errors/forbidden"));
 
                 verify(activitiesService, never()).getActivities(any(), any());
         }
@@ -118,8 +118,8 @@ public class ActivitiesControllerTest {
                                 .thenReturn(Result.success(List.of(sampleResponse())));
 
                 mockMvc.perform(get("/api/activities")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("{ \"familyId\": 1, \"familyMemberId\": 10 }")
+                                .param("familyId", "1")
+                                .param("familyMemberId", "10")
                                 .header("Authorization", TOKEN))
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$.length()").value(1));
@@ -273,7 +273,10 @@ public class ActivitiesControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(json)
                                 .header("Authorization", TOKEN))
-                                .andExpect(status().isForbidden());
+                                .andExpect(status().isForbidden())
+                                .andExpect(jsonPath("$.detail").value("Family access is not permitted"))
+                                .andExpect(jsonPath("$.type")
+                                                .value("https://familyplanner.heins.com/errors/forbidden"));
 
                 verify(activitiesService, never()).createActivity(any(), any());
         }

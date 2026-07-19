@@ -25,11 +25,11 @@ public class TodoController {
     private final TodoService todoService;
 
     @GetMapping
-    ResponseEntity<?> getTodos(@RequestBody @Valid GetTodosRequest getTodosRequest,
+    ResponseEntity<?> getTodos(@Valid GetTodosRequest getTodosRequest,
             @AuthenticationPrincipal FamilyAccount account) {
 
         if (!account.getFamily().getId().equals(getTodosRequest.familyId())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.of(Result.forbidden("Family access is not permitted").toProblemDetail()).build();
         }
 
         return switch (todoService.getTasks(getTodosRequest)) {
@@ -43,7 +43,7 @@ public class TodoController {
             @AuthenticationPrincipal FamilyAccount account) {
 
         if (!account.getFamily().getId().equals(addTodoRequest.familyId())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.of(Result.forbidden("Family access is not permitted").toProblemDetail()).build();
         }
 
         return switch (todoService.addTask(addTodoRequest)) {

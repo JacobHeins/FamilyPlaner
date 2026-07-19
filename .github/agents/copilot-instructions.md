@@ -1,6 +1,6 @@
 # workspace Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-04-05
+Auto-generated from all feature plans. Last updated: 2026-07-18
 
 ## Active Technologies
 - TypeScript 5.7 (frontend), Java 21 (backend — read context only) + React 19, RTK Query 2.6 (`@reduxjs/toolkit`), React Router 7, lucide-react (002-weekly-activity-planner)
@@ -10,6 +10,8 @@ Auto-generated from all feature plans. Last updated: 2026-04-05
 - TypeScript 5.7 (SPA); Java 21 backend contract as integration context + React 19, React Router 7, RTK Query 2.6, lucide-react (002-weekly-activity-planner)
 - TypeScript 5.7 (SPA); Java 21 backend contract as integration context + React 19, React Router 7, Redux Toolkit / RTK Query 2.6, lucide-react (003-dashboard-week-layout)
 - Existing backend persistence only; no new frontend persistence or browser storage (003-dashboard-week-layout)
+- Java 25; TypeScript 5.7; React 19 + Spring Boot 4.0.4, Spring Security, JJWT 0.12.6, React Router 7, Redux Toolkit RTK Query 2.6 (004-auth)
+- PostgreSQL with Flyway; `localStorage` for the browser JWT (004-auth)
 
 - TypeScript 5.x with React 19 + React Router 7, Redux Toolkit, RTK Query, lucide-react, Vite 6 (001-family-dashboard)
 
@@ -30,9 +32,9 @@ npm test && npm run lint
 TypeScript 5.x with React 19: Follow standard conventions
 
 ## Recent Changes
+- 004-auth: Added Java 25; TypeScript 5.7; React 19 + Spring Boot 4.0.4, Spring Security, JJWT 0.12.6, React Router 7, Redux Toolkit RTK Query 2.6
 - 003-dashboard-week-layout: Added TypeScript 5.7 (SPA); Java 21 backend contract as integration context + React 19, React Router 7, Redux Toolkit / RTK Query 2.6, lucide-react
 - 002-weekly-activity-planner: Added TypeScript 5.7 (SPA); Java 21 backend contract as integration context + React 19, React Router 7, RTK Query 2.6, lucide-react
-- 002-weekly-activity-planner: Added TypeScript 5.7 for SPA delivery; Java 21 backend contract as integration context + React 19, React Router 7, RTK Query 2.6, lucide-react
 
 
 <!-- MANUAL ADDITIONS START -->

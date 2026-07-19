@@ -24,146 +24,149 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(TestWebMvcConfig.class)
 class AuthControllerTest {
 
-    @Autowired
-    MockMvc mockMvc;
+        @Autowired
+        MockMvc mockMvc;
 
-    @MockitoBean
-    AuthService authService;
+        @MockitoBean
+        AuthService authService;
 
-    // Required by JwtAuthFilter which is part of the security filter chain
-    @MockitoBean
-    JwtService jwtService;
+        // Required by JwtAuthFilter which is part of the security filter chain
+        @MockitoBean
+        JwtService jwtService;
 
-    @MockitoBean
-    FamilyAccountsRepository accountsRepository;
+        @MockitoBean
+        FamilyAccountsRepository accountsRepository;
 
-    // -------------------------------------------------------
-    // POST /api/auth/login
-    // -------------------------------------------------------
+        // -------------------------------------------------------
+        // POST /api/auth/login
+        // -------------------------------------------------------
 
-    @Test
-    void login_returnsOk_whenCredentialsAreValid() throws Exception {
-        when(authService.login(any())).thenReturn(Result.success(new LoginResponse("jwt-token")));
+        @Test
+        void login_returnsOk_whenCredentialsAreValid() throws Exception {
+                when(authService.login(any())).thenReturn(Result.success(new LoginResponse("jwt-token")));
 
-        String json = """
-                { "familySlug": "heins-family", "password": "secret" }
-                """;
+                String json = """
+                                { "familySlug": "heins-family", "password": "secret" }
+                                """;
 
-        mockMvc.perform(post("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").value("jwt-token"));
-    }
+                mockMvc.perform(post("/api/auth/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.token").value("jwt-token"));
+        }
 
-    @Test
-    void login_returnsUnauthorized_whenCredentialsAreInvalid() throws Exception {
-        when(authService.login(any())).thenReturn(Result.unauthorized("Invalid credentials"));
+        @Test
+        void login_returnsUnauthorized_whenCredentialsAreInvalid() throws Exception {
+                when(authService.login(any())).thenReturn(Result.unauthorized("Invalid credentials"));
 
-        String json = """
-                { "familySlug": "heins-family", "password": "wrong" }
-                """;
+                String json = """
+                                { "familySlug": "heins-family", "password": "wrong" }
+                                """;
 
-        mockMvc.perform(post("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.detail").value("Invalid credentials"));
-    }
+                mockMvc.perform(post("/api/auth/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json))
+                                .andExpect(status().isUnauthorized())
+                                .andExpect(jsonPath("$.detail").value("Invalid credentials"))
+                                .andExpect(jsonPath("$.type")
+                                                .value("https://familyplanner.heins.com/errors/unauthorized"));
+        }
 
-    @Test
-    void login_returnsBadRequest_whenSlugMissing() throws Exception {
-        mockMvc.perform(post("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{ \"password\": \"secret\" }"))
-                .andExpect(status().isBadRequest());
+        @Test
+        void login_returnsBadRequest_whenSlugMissing() throws Exception {
+                mockMvc.perform(post("/api/auth/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{ \"password\": \"secret\" }"))
+                                .andExpect(status().isBadRequest());
 
-        verify(authService, never()).login(any());
-    }
+                verify(authService, never()).login(any());
+        }
 
-    @Test
-    void login_returnsBadRequest_whenPasswordMissing() throws Exception {
-        mockMvc.perform(post("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{ \"familySlug\": \"heins-family\" }"))
-                .andExpect(status().isBadRequest());
+        @Test
+        void login_returnsBadRequest_whenPasswordMissing() throws Exception {
+                mockMvc.perform(post("/api/auth/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{ \"familySlug\": \"heins-family\" }"))
+                                .andExpect(status().isBadRequest());
 
-        verify(authService, never()).login(any());
-    }
+                verify(authService, never()).login(any());
+        }
 
-    // -------------------------------------------------------
-    // POST /api/auth/register
-    // -------------------------------------------------------
+        // -------------------------------------------------------
+        // POST /api/auth/register
+        // -------------------------------------------------------
 
-    @Test
-    void register_returnsCreated_whenRequestIsValid() throws Exception {
-        when(authService.register(any())).thenReturn(Result.success(new LoginResponse("jwt-token")));
+        @Test
+        void register_returnsCreated_whenRequestIsValid() throws Exception {
+                when(authService.register(any())).thenReturn(Result.success(new LoginResponse("jwt-token")));
 
-        String json = """
-                { "familySlug": "heins-family", "familyName": "Heins", "password": "secret123" }
-                """;
+                String json = """
+                                { "familySlug": "heins-family", "familyName": "Heins", "password": "secret123" }
+                                """;
 
-        mockMvc.perform(post("/api/auth/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.token").value("jwt-token"));
-    }
+                mockMvc.perform(post("/api/auth/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json))
+                                .andExpect(status().isCreated())
+                                .andExpect(jsonPath("$.token").value("jwt-token"));
+        }
 
-    @Test
-    void register_returnsConflict_whenAccountAlreadyExists() throws Exception {
-        when(authService.register(any())).thenReturn(Result.conflict("Account already exists"));
+        @Test
+        void register_returnsConflict_whenAccountAlreadyExists() throws Exception {
+                when(authService.register(any())).thenReturn(Result.conflict("Account already exists"));
 
-        String json = """
-                { "familySlug": "heins-family", "familyName": "Heins", "password": "secret123" }
-                """;
+                String json = """
+                                { "familySlug": "heins-family", "familyName": "Heins", "password": "secret123" }
+                                """;
 
-        mockMvc.perform(post("/api/auth/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
-                .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.detail").value("Account already exists"));
-    }
+                mockMvc.perform(post("/api/auth/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json))
+                                .andExpect(status().isConflict())
+                                .andExpect(jsonPath("$.detail").value("Account already exists"))
+                                .andExpect(jsonPath("$.type").value("https://familyplanner.heins.com/errors/conflict"));
+        }
 
-    @Test
-    void register_returnsBadRequest_whenSlugMissing() throws Exception {
-        String json = """
-                { "familyName": "Heins", "password": "secret123" }
-                """;
+        @Test
+        void register_returnsBadRequest_whenSlugMissing() throws Exception {
+                String json = """
+                                { "familyName": "Heins", "password": "secret123" }
+                                """;
 
-        mockMvc.perform(post("/api/auth/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
-                .andExpect(status().isBadRequest());
+                mockMvc.perform(post("/api/auth/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json))
+                                .andExpect(status().isBadRequest());
 
-        verify(authService, never()).register(any());
-    }
+                verify(authService, never()).register(any());
+        }
 
-    @Test
-    void register_returnsBadRequest_whenFamilyNameMissing() throws Exception {
-        String json = """
-                { "familySlug": "heins-family", "password": "secret123" }
-                """;
+        @Test
+        void register_returnsBadRequest_whenFamilyNameMissing() throws Exception {
+                String json = """
+                                { "familySlug": "heins-family", "password": "secret123" }
+                                """;
 
-        mockMvc.perform(post("/api/auth/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
-                .andExpect(status().isBadRequest());
+                mockMvc.perform(post("/api/auth/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json))
+                                .andExpect(status().isBadRequest());
 
-        verify(authService, never()).register(any());
-    }
+                verify(authService, never()).register(any());
+        }
 
-    @Test
-    void register_returnsBadRequest_whenPasswordTooShort() throws Exception {
-        String json = """
-                { "familySlug": "heins-family", "familyName": "Heins", "password": "short" }
-                """;
+        @Test
+        void register_returnsBadRequest_whenPasswordTooShort() throws Exception {
+                String json = """
+                                { "familySlug": "heins-family", "familyName": "Heins", "password": "short" }
+                                """;
 
-        mockMvc.perform(post("/api/auth/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
-                .andExpect(status().isBadRequest());
+                mockMvc.perform(post("/api/auth/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json))
+                                .andExpect(status().isBadRequest());
 
-        verify(authService, never()).register(any());
-    }
+                verify(authService, never()).register(any());
+        }
 }

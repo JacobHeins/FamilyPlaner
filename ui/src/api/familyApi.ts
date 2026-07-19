@@ -1,7 +1,8 @@
 import { baseApi } from "./baseApi";
+import type { RootState } from "../app/store/store";
+import type { FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
 import type {
   AddFamilyMemberRequest,
-  CreateFamilyRequest,
   Family,
   FamilyRole,
   UpdateFamilyRequest,
@@ -9,10 +10,44 @@ import type {
 
 export type { Family, FamilyMember, FamilyRole } from "../app/store/types";
 
+/** Extract the `familyId` claim from a stored JWT (base64url payload). */
+function familyIdFromToken(token: string | null): number | null {
+  if (!token) return null;
+  const segment = token.split(".")[1];
+  if (!segment) return null;
+  try {
+    const base64 = segment.replace(/-/g, "+").replace(/_/g, "/");
+    const payload = JSON.parse(atob(base64)) as { familyId?: number | string };
+    const familyId = Number(payload.familyId);
+    return Number.isFinite(familyId) ? familyId : null;
+  } catch {
+    return null;
+  }
+}
+
 export const familyApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getFamilies: builder.query<Family[], void>({
-      query: () => "/families",
+      async queryFn(_arg, api, _extraOptions, baseQuery) {
+        const token = (api.getState() as RootState).auth.token;
+        const familyId = familyIdFromToken(token);
+
+        if (!familyId) {
+          return {
+            error: {
+              status: 401,
+              data: "Kein Familienkonto im Token gefunden.",
+            } as FetchBaseQueryError,
+          };
+        }
+
+        const result = await baseQuery(`/families/${familyId}`);
+        if (result.error) {
+          return { error: result.error };
+        }
+
+        return { data: [result.data as Family] };
+      },
       providesTags: (result) =>
         result
           ? [
@@ -23,14 +58,6 @@ export const familyApi = baseApi.injectEndpoints({
               { type: "Family" as const, id: "LIST" },
             ]
           : [{ type: "Family" as const, id: "LIST" }],
-    }),
-    createFamily: builder.mutation<Family, CreateFamilyRequest>({
-      query: (body) => ({
-        url: "/families",
-        method: "POST",
-        body,
-      }),
-      invalidatesTags: [{ type: "Family", id: "LIST" }],
     }),
     updateFamily: builder.mutation<Family, UpdateFamilyRequest>({
       query: ({ id, ...body }) => ({
@@ -59,28 +86,11 @@ export const familyApi = baseApi.injectEndpoints({
 
 export const {
   useGetFamiliesQuery,
-  useCreateFamilyMutation,
   useUpdateFamilyMutation,
   useAddFamilyMemberMutation,
 } = familyApi;
 
 const BASE = "/api";
-
-export async function getFamilies(): Promise<Family[]> {
-  const res = await fetch(`${BASE}/families`);
-  if (!res.ok) throw new Error(`Failed to fetch families: ${res.status}`);
-  return res.json();
-}
-
-export async function createFamily(name: string): Promise<Family> {
-  const res = await fetch(`${BASE}/families`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name }),
-  });
-  if (!res.ok) throw new Error(`Failed to create family: ${res.status}`);
-  return res.json();
-}
 
 export async function updateFamily(id: number, name: string): Promise<Family> {
   const res = await fetch(`${BASE}/families/${id}`, {

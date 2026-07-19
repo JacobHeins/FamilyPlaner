@@ -69,8 +69,7 @@ public class TodoControllerTest {
                 when(todoService.getTasks(any())).thenReturn(Result.success(List.of(todo)));
 
                 mockMvc.perform(get("/api/todos")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("{ \"familyId\": 1 }")
+                                .param("familyId", "1")
                                 .header("Authorization", TOKEN))
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$.length()").value(1))
@@ -85,8 +84,7 @@ public class TodoControllerTest {
                 when(todoService.getTasks(any())).thenReturn(Result.notFound("Family not found: 1"));
 
                 mockMvc.perform(get("/api/todos")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("{ \"familyId\": 1 }")
+                                .param("familyId", "1")
                                 .header("Authorization", TOKEN))
                                 .andExpect(status().isNotFound())
                                 .andExpect(jsonPath("$.detail").value("Family not found: 1"));
@@ -95,10 +93,12 @@ public class TodoControllerTest {
         @Test
         void getTodos_returnsForbidden_whenFamilyIdDoesNotMatchAccount() throws Exception {
                 mockMvc.perform(get("/api/todos")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("{ \"familyId\": 99 }")
+                                .param("familyId", "99")
                                 .header("Authorization", TOKEN))
-                                .andExpect(status().isForbidden());
+                                .andExpect(status().isForbidden())
+                                .andExpect(jsonPath("$.detail").value("Family access is not permitted"))
+                                .andExpect(jsonPath("$.type")
+                                                .value("https://familyplanner.heins.com/errors/forbidden"));
 
                 verify(todoService, never()).getTasks(any());
         }
@@ -208,7 +208,10 @@ public class TodoControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("{ \"name\": \"Buy milk\", \"familyId\": 99 }")
                                 .header("Authorization", TOKEN))
-                                .andExpect(status().isForbidden());
+                                .andExpect(status().isForbidden())
+                                .andExpect(jsonPath("$.detail").value("Family access is not permitted"))
+                                .andExpect(jsonPath("$.type")
+                                                .value("https://familyplanner.heins.com/errors/forbidden"));
 
                 verify(todoService, never()).addTask(any());
         }

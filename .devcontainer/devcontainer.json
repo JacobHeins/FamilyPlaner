@@ -12,9 +12,8 @@
       "version": "22"
     }
   },
-  "forwardPorts": [8080, 5173],
+  "forwardPorts": [5173],
   "portsAttributes": {
-    "8080": { "label": "Spring Boot API" },
     "5173": { "label": "Vite Dev Server" }
   },
   "postCreateCommand": "curl -LsSf https://astral.sh/uv/install.sh | sh && $HOME/.local/bin/uv tool install specify-cli --from git+https://github.com/github/spec-kit.git && $HOME/.local/bin/specify init --here --ai copilot --force && cd ui && npm install",

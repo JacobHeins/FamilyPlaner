@@ -13,7 +13,7 @@ export const activityApi = baseApi.injectEndpoints({
         url: "/activities",
         params: {
           familyId,
-          ...(memberId ? { memberId } : {}),
+          ...(memberId ? { familyMemberId: memberId } : {}),
         },
       }),
       providesTags: (result) =>

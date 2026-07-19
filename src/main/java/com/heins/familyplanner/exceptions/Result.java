@@ -8,7 +8,7 @@ import java.net.URI;
 public sealed interface Result<T> permits Result.Success, Result.Failure {
 
     enum ErrorType {
-        NOT_FOUND, BAD_REQUEST, CONFLICT, UNAUTHORIZED
+        NOT_FOUND, BAD_REQUEST, CONFLICT, UNAUTHORIZED, FORBIDDEN
     }
 
     record Success<T>(T value) implements Result<T> {
@@ -21,6 +21,7 @@ public sealed interface Result<T> permits Result.Success, Result.Failure {
                 case BAD_REQUEST -> 400;
                 case CONFLICT -> 409;
                 case UNAUTHORIZED -> 401;
+                case FORBIDDEN -> 403;
             };
         }
 
@@ -52,6 +53,10 @@ public sealed interface Result<T> permits Result.Success, Result.Failure {
 
     static <T> Result<T> unauthorized(String error) {
         return new Failure<>(ErrorType.UNAUTHORIZED, error);
+    }
+
+    static <T> Failure<T> forbidden(String error) {
+        return new Failure<>(ErrorType.FORBIDDEN, error);
     }
 
     default boolean isSuccess() {

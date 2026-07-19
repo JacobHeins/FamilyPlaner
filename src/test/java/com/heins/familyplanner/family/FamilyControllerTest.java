@@ -83,7 +83,10 @@ public class FamilyControllerTest {
         void getFamily_returnsForbidden_whenFamilyDoesNotBelongToAccount() throws Exception {
                 mockMvc.perform(get("/api/families/99")
                                 .header("Authorization", TOKEN))
-                                .andExpect(status().isForbidden());
+                                .andExpect(status().isForbidden())
+                                .andExpect(jsonPath("$.detail").value("Family access is not permitted"))
+                                .andExpect(jsonPath("$.type")
+                                                .value("https://familyplanner.heins.com/errors/forbidden"));
 
                 verify(familyService, never()).getFamily(any(), any());
         }
@@ -153,7 +156,10 @@ public class FamilyControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(json)
                                 .header("Authorization", TOKEN))
-                                .andExpect(status().isForbidden());
+                                .andExpect(status().isForbidden())
+                                .andExpect(jsonPath("$.detail").value("Family access is not permitted"))
+                                .andExpect(jsonPath("$.type")
+                                                .value("https://familyplanner.heins.com/errors/forbidden"));
 
                 verify(familyService, never()).updateFamily(any(), any(), any());
         }
@@ -188,7 +194,10 @@ public class FamilyControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(json)
                                 .header("Authorization", TOKEN))
-                                .andExpect(status().isForbidden());
+                                .andExpect(status().isForbidden())
+                                .andExpect(jsonPath("$.detail").value("Family access is not permitted"))
+                                .andExpect(jsonPath("$.type")
+                                                .value("https://familyplanner.heins.com/errors/forbidden"));
 
                 verify(familyService, never()).addFamilyMember(any(), any(), any());
         }

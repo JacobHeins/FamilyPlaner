@@ -34,7 +34,7 @@ public class FamilyController {
             @AuthenticationPrincipal FamilyAccount account) {
 
         if (!account.getFamily().getId().equals(id)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.of(Result.forbidden("Family access is not permitted").toProblemDetail()).build();
         }
 
         return switch (familyService.getFamily(id, account.getId())) {
@@ -51,7 +51,7 @@ public class FamilyController {
             @AuthenticationPrincipal FamilyAccount account) {
 
         if (!account.getFamily().getId().equals(id)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.of(Result.forbidden("Family access is not permitted").toProblemDetail()).build();
         }
 
         return switch (familyService.updateFamily(id, account.getId(), request)) {
@@ -68,7 +68,7 @@ public class FamilyController {
             @AuthenticationPrincipal FamilyAccount account) {
 
         if (!account.getFamily().getId().equals(id)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.of(Result.forbidden("Family access is not permitted").toProblemDetail()).build();
         }
 
         return switch (familyService.addFamilyMember(id, account.getId(), request)) {

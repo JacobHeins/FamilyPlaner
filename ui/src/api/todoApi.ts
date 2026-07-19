@@ -33,8 +33,8 @@ export const todoApi = baseApi.injectEndpoints({
       invalidatesTags: [{ type: "Todo", id: "LIST" }],
     }),
     updateTodo: builder.mutation<Todo, UpdateTodoRequest>({
-      query: (body) => ({
-        url: "/todos",
+      query: ({ id, ...body }) => ({
+        url: `/todos/${id}`,
         method: "PUT",
         body,
       }),

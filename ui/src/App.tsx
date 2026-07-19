@@ -5,19 +5,26 @@ import FamilyMembers from "./pages/FamilyMembers";
 import Tasks from "./pages/Tasks";
 import WeeklyPlanner from "./pages/WeeklyPlanner";
 import Activities from "./pages/Activities";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import ProtectedRoute from "./components/ProtectedRoute";
 import "./App.css";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<Layout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="members" element={<FamilyMembers />} />
-          <Route path="tasks" element={<Tasks />} />
-          <Route path="week" element={<WeeklyPlanner />} />
-          <Route path="activities" element={<Activities />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route element={<ProtectedRoute />}>
+          <Route element={<Layout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="members" element={<FamilyMembers />} />
+            <Route path="tasks" element={<Tasks />} />
+            <Route path="week" element={<WeeklyPlanner />} />
+            <Route path="activities" element={<Activities />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

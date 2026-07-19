@@ -26,11 +26,11 @@ public class ActivitiesController {
     private final ActivitiesService activitiesService;
 
     @GetMapping
-    public ResponseEntity<?> getActivities(@RequestBody @Valid GetActivitiesRequest getActivitiesRequest,
+    public ResponseEntity<?> getActivities(@Valid GetActivitiesRequest getActivitiesRequest,
             @AuthenticationPrincipal FamilyAccount account) {
 
         if (!account.getFamily().getId().equals(getActivitiesRequest.familyId())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.of(Result.forbidden("Family access is not permitted").toProblemDetail()).build();
         }
 
         return switch (activitiesService.getActivities(getActivitiesRequest, account.getId())) {
@@ -45,7 +45,7 @@ public class ActivitiesController {
             @AuthenticationPrincipal FamilyAccount account) {
 
         if (!account.getFamily().getId().equals(createActivityRequest.familyId())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.of(Result.forbidden("Family access is not permitted").toProblemDetail()).build();
         }
 
         return switch (activitiesService.createActivity(createActivityRequest, account.getId())) {

@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 import {
   useGetFamiliesQuery,
-  useCreateFamilyMutation,
   useUpdateFamilyMutation,
   useAddFamilyMemberMutation,
   roleColor,
@@ -24,12 +23,10 @@ const ROLES: FamilyRole[] = ["DAD", "MOM", "CHILD"];
 export default function FamilyMembers() {
   const { data: families = [], isLoading, isError } = useGetFamiliesQuery();
 
-  const [createFamily, { isLoading: creating }] = useCreateFamilyMutation();
   const [updateFamily, { isLoading: renaming }] = useUpdateFamilyMutation();
   const [addMember, { isLoading: addingMember }] = useAddFamilyMemberMutation();
 
   const [showMemberForm, setShowMemberForm] = useState(false);
-  const [showFamilyForm, setShowFamilyForm] = useState(false);
   const [renamingFamilyId, setRenamingFamilyId] = useState<number | null>(null);
   const [renameValue, setRenameValue] = useState("");
 
@@ -38,7 +35,6 @@ export default function FamilyMembers() {
     role: FamilyRole;
     familyId: number | "";
   }>({ name: "", role: "CHILD", familyId: "" });
-  const [familyName, setFamilyName] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
 
   const allMembersCount = families.reduce(
@@ -65,19 +61,6 @@ export default function FamilyMembers() {
       setRenameValue("");
     } catch {
       setFormError("Familie konnte nicht umbenannt werden.");
-    }
-  }
-
-  async function submitFamily() {
-    if (!familyName.trim()) return;
-    setFormError(null);
-    try {
-      const created = await createFamily({ name: familyName.trim() }).unwrap();
-      setMemberForm((f) => ({ ...f, familyId: created.id }));
-      setShowFamilyForm(false);
-      setFamilyName("");
-    } catch {
-      setFormError("Familie konnte nicht erstellt werden.");
     }
   }
 
@@ -126,12 +109,6 @@ export default function FamilyMembers() {
         </div>
         <div className="fm-header-actions">
           <button
-            className="btn-secondary"
-            onClick={() => setShowFamilyForm((s) => !s)}
-          >
-            <Plus size={16} /> Neue Familie
-          </button>
-          <button
             className="btn-primary"
             onClick={() => {
               setMemberForm((f) => ({
@@ -154,34 +131,6 @@ export default function FamilyMembers() {
           <button className="error-dismiss" onClick={() => setFormError(null)}>
             <X size={14} />
           </button>
-        </div>
-      )}
-
-      {showFamilyForm && (
-        <div className="member-form-inline card">
-          <input
-            className="fm-input"
-            placeholder="Familienname…"
-            value={familyName}
-            onChange={(e) => setFamilyName(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && submitFamily()}
-            autoFocus
-          />
-          <div className="add-actions">
-            <button
-              className="add-cancel"
-              onClick={() => setShowFamilyForm(false)}
-            >
-              Abbrechen
-            </button>
-            <button
-              className="add-submit"
-              onClick={submitFamily}
-              disabled={creating}
-            >
-              {creating ? "Wird erstellt…" : "Erstellen"}
-            </button>
-          </div>
         </div>
       )}
 
