@@ -9,6 +9,7 @@ import com.heins.familyplanner.family.mapper.FamilyRoleMapper;
 import com.heins.familyplanner.family.repositories.FamilyMemberRepository;
 import com.heins.familyplanner.family.repositories.FamilyRepository;
 import com.heins.familyplanner.todos.dtos.AddTodoRequest;
+import com.heins.familyplanner.todos.dtos.GetTodosRequest;
 import com.heins.familyplanner.todos.dtos.TodoResponse;
 import com.heins.familyplanner.todos.dtos.UpdateTodoRequest;
 import com.heins.familyplanner.todos.entities.Todo;
@@ -140,7 +141,7 @@ public class TodoServiceTest {
         ReflectionTestUtils.setField(todo, "id", 1L);
         when(todoRepository.findAll(any(Specification.class))).thenReturn(List.of(todo));
 
-        Result<List<TodoResponse>> result = todoService.getTasks(1L, null);
+        Result<List<TodoResponse>> result = todoService.getTasks(new GetTodosRequest(1L, null));
 
         assertInstanceOf(Result.Success.class, result);
         List<TodoResponse> todos = ((Result.Success<List<TodoResponse>>) result).value();
@@ -152,7 +153,7 @@ public class TodoServiceTest {
     void getTasks_returnsNotFound_whenFamilyMissing() {
         when(familyRepository.existsById(99L)).thenReturn(false);
 
-        Result<List<TodoResponse>> result = todoService.getTasks(99L, null);
+        Result<List<TodoResponse>> result = todoService.getTasks(new GetTodosRequest(99L, null));
 
         assertInstanceOf(Result.Failure.class, result);
         assertEquals("Family not found: 99", ((Result.Failure<List<TodoResponse>>) result).error());
@@ -165,12 +166,12 @@ public class TodoServiceTest {
     void updateTodo_returnsSuccess_whenTodoExists() {
         Todo todo = new Todo("Old name", null, null, family, null);
         ReflectionTestUtils.setField(todo, "id", 1L);
-        when(todoRepository.findById(1L)).thenReturn(Optional.of(todo));
+        when(todoRepository.findByIdAndFamily_Id(1L, 1L)).thenReturn(Optional.of(todo));
         when(todoRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
-        UpdateTodoRequest req = new UpdateTodoRequest(1L, "New name", null, Instant.now().plusSeconds(3600), false,
+        UpdateTodoRequest req = new UpdateTodoRequest("New name", null, Instant.now().plusSeconds(3600), false,
                 null);
-        Result<TodoResponse> result = todoService.updateTodo(req);
+        Result<TodoResponse> result = todoService.updateTodo(1L, req, 1L);
 
         assertInstanceOf(Result.Success.class, result);
         assertEquals("New name", ((Result.Success<TodoResponse>) result).value().name());
@@ -179,10 +180,10 @@ public class TodoServiceTest {
 
     @Test
     void updateTodo_returnsNotFound_whenTodoMissing() {
-        when(todoRepository.findById(99L)).thenReturn(Optional.empty());
+        when(todoRepository.findByIdAndFamily_Id(99L, 1L)).thenReturn(Optional.empty());
 
-        UpdateTodoRequest req = new UpdateTodoRequest(99L, "Name", null, null, false, null);
-        Result<TodoResponse> result = todoService.updateTodo(req);
+        UpdateTodoRequest req = new UpdateTodoRequest("Name", null, null, false, null);
+        Result<TodoResponse> result = todoService.updateTodo(99L, req, 1L);
 
         assertInstanceOf(Result.Failure.class, result);
         assertEquals(Result.ErrorType.NOT_FOUND, ((Result.Failure<TodoResponse>) result).errorType());
@@ -191,10 +192,13 @@ public class TodoServiceTest {
 
     @Test
     void updateTodo_returnsNotFound_whenAssigneeMissing() {
+        Todo todo = new Todo("Name", null, null, family, null);
+        ReflectionTestUtils.setField(todo, "id", 1L);
+        when(todoRepository.findByIdAndFamily_Id(1L, 1L)).thenReturn(Optional.of(todo));
         when(familyMemberRepository.findById(99L)).thenReturn(Optional.empty());
 
-        UpdateTodoRequest req = new UpdateTodoRequest(1L, "Name", null, null, false, 99L);
-        Result<TodoResponse> result = todoService.updateTodo(req);
+        UpdateTodoRequest req = new UpdateTodoRequest("Name", null, null, false, 99L);
+        Result<TodoResponse> result = todoService.updateTodo(1L, req, 1L);
 
         assertInstanceOf(Result.Failure.class, result);
         assertEquals("Member not found: 99", ((Result.Failure<TodoResponse>) result).error());
@@ -205,9 +209,9 @@ public class TodoServiceTest {
     // -------------------------------------------------------
     @Test
     void deleteTodo_returnsSuccess_whenTodoExists() {
-        when(todoRepository.existsById(1L)).thenReturn(true);
+        when(todoRepository.existsByIdAndFamily_Id(1L, 1L)).thenReturn(true);
 
-        Result<Void> result = todoService.deleteTodo(1L);
+        Result<Void> result = todoService.deleteTodo(1L, 1L);
 
         assertInstanceOf(Result.Success.class, result);
         verify(todoRepository).deleteById(1L);
@@ -215,9 +219,9 @@ public class TodoServiceTest {
 
     @Test
     void deleteTodo_returnsNotFound_whenTodoMissing() {
-        when(todoRepository.existsById(99L)).thenReturn(false);
+        when(todoRepository.existsByIdAndFamily_Id(99L, 1L)).thenReturn(false);
 
-        Result<Void> result = todoService.deleteTodo(99L);
+        Result<Void> result = todoService.deleteTodo(99L, 1L);
 
         assertInstanceOf(Result.Failure.class, result);
         assertEquals("Todo not found: 99", ((Result.Failure<Void>) result).error());

@@ -15,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -38,9 +37,9 @@ public class FamilyService {
     }
 
     @Transactional
-    public Result<FamilyResponse> updateFamily(Long familyId, UpdateFamilyRequest request) {
+    public Result<FamilyResponse> updateFamily(Long familyId, Long accountId, UpdateFamilyRequest request) {
         log.debug("Updating family {} with values {}", familyId, request);
-        Optional<Family> oldFamilyOpt = familyRepository.findById(familyId);
+        Optional<Family> oldFamilyOpt = familyRepository.findByIdAndAccountId(familyId, accountId);
         if (oldFamilyOpt.isEmpty()) {
             log.warn("Family not found with id: {}", familyId);
             return Result.notFound("Family not found with id: " + familyId);
@@ -51,19 +50,22 @@ public class FamilyService {
         return Result.success(familyMapper.toFamilyResponse(newFamily));
     }
 
-    public List<FamilyResponse> getAllFamilies() {
-        log.debug("Fetching all families");
-        return familyRepository
-                .findAll()
-                .stream()
-                .map(familyMapper::toFamilyResponse)
-                .toList();
+    public Result<FamilyResponse> getFamily(Long familyId, Long accountId) {
+        log.debug("Fetching family with id: {}", familyId);
+
+        Optional<Family> familyOpt = familyRepository.findByIdAndAccountId(familyId, accountId);
+        if (familyOpt.isEmpty()) {
+            log.warn("Family not found with id: {}", familyId);
+            return Result.notFound("Family not found with id: " + familyId);
+        }
+
+        return Result.success(familyMapper.toFamilyResponse(familyOpt.get()));
     }
 
     @Transactional
-    public Result<FamilyResponse> addFamilyMember(Long familyId, AddFamilyMemberRequest request) {
+    public Result<FamilyResponse> addFamilyMember(Long familyId, Long accountId, AddFamilyMemberRequest request) {
         log.debug("Adding member '{}' to familyId: {}", request.name(), familyId);
-        var familyOpt = familyRepository.findById(familyId);
+        var familyOpt = familyRepository.findByIdAndAccountId(familyId, accountId);
         if (familyOpt.isEmpty()) {
             log.warn("Family not found with id: {}", familyId);
             return Result.notFound("Family not found with id: " + familyId);

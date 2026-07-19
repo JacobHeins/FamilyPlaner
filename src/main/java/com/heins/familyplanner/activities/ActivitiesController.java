@@ -1,7 +1,9 @@
 package com.heins.familyplanner.activities;
 
+import com.heins.familyplanner.accounts.entities.FamilyAccount;
 import com.heins.familyplanner.activities.dtos.ActivityResponse;
 import com.heins.familyplanner.activities.dtos.CreateActivityRequest;
+import com.heins.familyplanner.activities.dtos.GetActivitiesRequest;
 import com.heins.familyplanner.activities.dtos.UpdateActivityRequest;
 import com.heins.familyplanner.exceptions.Result;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -10,6 +12,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,11 +26,14 @@ public class ActivitiesController {
     private final ActivitiesService activitiesService;
 
     @GetMapping
-    public ResponseEntity<?> getActivities(
-            @RequestParam Long familyId,
-            @RequestParam(required = false) Long memberId
-    ) {
-        return switch (activitiesService.getActivities(familyId, memberId)) {
+    public ResponseEntity<?> getActivities(@Valid GetActivitiesRequest getActivitiesRequest,
+            @AuthenticationPrincipal FamilyAccount account) {
+
+        if (!account.getFamily().getId().equals(getActivitiesRequest.familyId())) {
+            return ResponseEntity.of(Result.forbidden("Family access is not permitted").toProblemDetail()).build();
+        }
+
+        return switch (activitiesService.getActivities(getActivitiesRequest, account.getId())) {
             case Result.Success<List<ActivityResponse>> s -> ResponseEntity.ok(s.value());
             case Result.Failure<List<ActivityResponse>> f -> ResponseEntity.of(f.toProblemDetail()).build();
         };
@@ -35,32 +41,37 @@ public class ActivitiesController {
 
     @PostMapping
     public ResponseEntity<?> createActivity(
-            @Valid @NotNull @RequestBody CreateActivityRequest createActivityRequest
-    ) {
-        return switch (activitiesService.createActivity(createActivityRequest)) {
+            @Valid @NotNull @RequestBody CreateActivityRequest createActivityRequest,
+            @AuthenticationPrincipal FamilyAccount account) {
+
+        if (!account.getFamily().getId().equals(createActivityRequest.familyId())) {
+            return ResponseEntity.of(Result.forbidden("Family access is not permitted").toProblemDetail()).build();
+        }
+
+        return switch (activitiesService.createActivity(createActivityRequest, account.getId())) {
             case Result.Success<ActivityResponse> s -> ResponseEntity.status(HttpStatus.CREATED).body(s.value());
-            case Result.Failure<ActivityResponse> f-> ResponseEntity.of(f.toProblemDetail()).build();
+            case Result.Failure<ActivityResponse> f -> ResponseEntity.of(f.toProblemDetail()).build();
         };
     }
 
     @PutMapping("{id}")
     public ResponseEntity<?> updateActivity(
             @PathVariable Long id,
-            @Valid @NotNull @RequestBody UpdateActivityRequest updateActivityRequest
-    ) {
-        return switch (activitiesService.updateActivity(id, updateActivityRequest)){
+            @Valid @NotNull @RequestBody UpdateActivityRequest updateActivityRequest,
+            @AuthenticationPrincipal FamilyAccount account) {
+        return switch (activitiesService.updateActivity(id, updateActivityRequest, account.getFamily().getId())) {
             case Result.Success<ActivityResponse> s -> ResponseEntity.status(HttpStatus.CREATED).body(s.value());
             case Result.Failure<ActivityResponse> f -> ResponseEntity.of(f.toProblemDetail()).build();
         };
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteActivity(@PathVariable Long id) {
-        return switch (activitiesService.deleteActivity(id)) {
+    public ResponseEntity<?> deleteActivity(@PathVariable Long id,
+            @AuthenticationPrincipal FamilyAccount account) {
+        return switch (activitiesService.deleteActivity(id, account.getFamily().getId())) {
             case Result.Success<Void> _ -> ResponseEntity.noContent().build();
             case Result.Failure<Void> f -> ResponseEntity.of(f.toProblemDetail()).build();
         };
     }
-
 
 }

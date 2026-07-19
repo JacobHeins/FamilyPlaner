@@ -2,6 +2,7 @@ package com.heins.familyplanner.activities;
 
 import com.heins.familyplanner.activities.dtos.ActivityResponse;
 import com.heins.familyplanner.activities.dtos.CreateActivityRequest;
+import com.heins.familyplanner.activities.dtos.GetActivitiesRequest;
 import com.heins.familyplanner.activities.dtos.UpdateActivityRequest;
 import com.heins.familyplanner.activities.entities.Activity;
 import com.heins.familyplanner.activities.mapper.ActivityMapper;
@@ -52,7 +53,8 @@ public class ActivitiesServiceTest {
 
     @BeforeEach
     void setUp() {
-        activitiesService = new ActivitiesService(activitiesRepository, familyRepository, familyMemberRepository, activityMapper);
+        activitiesService = new ActivitiesService(activitiesRepository, familyRepository, familyMemberRepository,
+                activityMapper);
 
         family = new Family("Heins");
         ReflectionTestUtils.setField(family, "id", 1L);
@@ -68,7 +70,7 @@ public class ActivitiesServiceTest {
 
     @Test
     void createActivity_returnsSuccess_whenFamilyExists() {
-        when(familyRepository.findById(1L)).thenReturn(Optional.of(family));
+        when(familyRepository.findByIdAndAccountId(1L, 1L)).thenReturn(Optional.of(family));
         when(activitiesRepository.save(any())).thenAnswer(i -> {
             Activity a = i.getArgument(0);
             ReflectionTestUtils.setField(a, "id", 1L);
@@ -76,7 +78,7 @@ public class ActivitiesServiceTest {
         });
 
         CreateActivityRequest req = new CreateActivityRequest("Football", null, null, futureDate, null, null, 1L, null);
-        Result<ActivityResponse> result = activitiesService.createActivity(req);
+        Result<ActivityResponse> result = activitiesService.createActivity(req, 1L);
 
         assertInstanceOf(Result.Success.class, result);
         ActivityResponse resp = ((Result.Success<ActivityResponse>) result).value();
@@ -88,7 +90,7 @@ public class ActivitiesServiceTest {
 
     @Test
     void createActivity_returnsSuccess_withParticipants() {
-        when(familyRepository.findById(1L)).thenReturn(Optional.of(family));
+        when(familyRepository.findByIdAndAccountId(1L, 1L)).thenReturn(Optional.of(family));
         when(familyMemberRepository.findById(10L)).thenReturn(Optional.of(member));
         when(activitiesRepository.save(any())).thenAnswer(i -> {
             Activity a = i.getArgument(0);
@@ -96,8 +98,9 @@ public class ActivitiesServiceTest {
             return a;
         });
 
-        CreateActivityRequest req = new CreateActivityRequest("Football", null, null, futureDate, null, null, 1L, List.of(10L));
-        Result<ActivityResponse> result = activitiesService.createActivity(req);
+        CreateActivityRequest req = new CreateActivityRequest("Football", null, null, futureDate, null, null, 1L,
+                List.of(10L));
+        Result<ActivityResponse> result = activitiesService.createActivity(req, 1L);
 
         assertInstanceOf(Result.Success.class, result);
         ActivityResponse resp = ((Result.Success<ActivityResponse>) result).value();
@@ -107,7 +110,7 @@ public class ActivitiesServiceTest {
 
     @Test
     void createActivity_skipsUnknownParticipants() {
-        when(familyRepository.findById(1L)).thenReturn(Optional.of(family));
+        when(familyRepository.findByIdAndAccountId(1L, 1L)).thenReturn(Optional.of(family));
         when(familyMemberRepository.findById(99L)).thenReturn(Optional.empty());
         when(activitiesRepository.save(any())).thenAnswer(i -> {
             Activity a = i.getArgument(0);
@@ -115,8 +118,9 @@ public class ActivitiesServiceTest {
             return a;
         });
 
-        CreateActivityRequest req = new CreateActivityRequest("Football", null, null, futureDate, null, null, 1L, List.of(99L));
-        Result<ActivityResponse> result = activitiesService.createActivity(req);
+        CreateActivityRequest req = new CreateActivityRequest("Football", null, null, futureDate, null, null, 1L,
+                List.of(99L));
+        Result<ActivityResponse> result = activitiesService.createActivity(req, 1L);
 
         assertInstanceOf(Result.Success.class, result);
         assertTrue(((Result.Success<ActivityResponse>) result).value().participants().isEmpty());
@@ -125,10 +129,11 @@ public class ActivitiesServiceTest {
 
     @Test
     void createActivity_returnsNotFound_whenFamilyMissing() {
-        when(familyRepository.findById(99L)).thenReturn(Optional.empty());
+        when(familyRepository.findByIdAndAccountId(99L, 1L)).thenReturn(Optional.empty());
 
-        CreateActivityRequest req = new CreateActivityRequest("Football", null, null, futureDate, null, null, 99L, null);
-        Result<ActivityResponse> result = activitiesService.createActivity(req);
+        CreateActivityRequest req = new CreateActivityRequest("Football", null, null, futureDate, null, null, 99L,
+                null);
+        Result<ActivityResponse> result = activitiesService.createActivity(req, 1L);
 
         assertInstanceOf(Result.Failure.class, result);
         assertEquals(Result.ErrorType.NOT_FOUND, ((Result.Failure<ActivityResponse>) result).errorType());
@@ -142,12 +147,12 @@ public class ActivitiesServiceTest {
     @Test
     @SuppressWarnings("unchecked")
     void getActivities_returnsActivities_whenFamilyExists() {
-        when(familyRepository.existsById(1L)).thenReturn(true);
+        when(familyRepository.findByIdAndAccountId(1L, 1L)).thenReturn(Optional.of(family));
         Activity activity = new Activity("Football", null, null, futureDate, null, null, family, List.of());
         ReflectionTestUtils.setField(activity, "id", 1L);
         when(activitiesRepository.findAll(any(Specification.class))).thenReturn(List.of(activity));
 
-        Result<List<ActivityResponse>> result = activitiesService.getActivities(1L, null);
+        Result<List<ActivityResponse>> result = activitiesService.getActivities(new GetActivitiesRequest(1L, null), 1L);
 
         assertInstanceOf(Result.Success.class, result);
         List<ActivityResponse> activities = ((Result.Success<List<ActivityResponse>>) result).value();
@@ -158,10 +163,10 @@ public class ActivitiesServiceTest {
     @Test
     @SuppressWarnings("unchecked")
     void getActivities_returnsEmpty_whenNoActivitiesExist() {
-        when(familyRepository.existsById(1L)).thenReturn(true);
+        when(familyRepository.findByIdAndAccountId(1L, 1L)).thenReturn(Optional.of(family));
         when(activitiesRepository.findAll(any(Specification.class))).thenReturn(List.of());
 
-        Result<List<ActivityResponse>> result = activitiesService.getActivities(1L, null);
+        Result<List<ActivityResponse>> result = activitiesService.getActivities(new GetActivitiesRequest(1L, null), 1L);
 
         assertInstanceOf(Result.Success.class, result);
         assertTrue(((Result.Success<List<ActivityResponse>>) result).value().isEmpty());
@@ -169,9 +174,10 @@ public class ActivitiesServiceTest {
 
     @Test
     void getActivities_returnsNotFound_whenFamilyMissing() {
-        when(familyRepository.existsById(99L)).thenReturn(false);
+        when(familyRepository.findByIdAndAccountId(99L, 1L)).thenReturn(Optional.empty());
 
-        Result<List<ActivityResponse>> result = activitiesService.getActivities(99L, null);
+        Result<List<ActivityResponse>> result = activitiesService.getActivities(new GetActivitiesRequest(99L, null),
+                1L);
 
         assertInstanceOf(Result.Failure.class, result);
         assertEquals(Result.ErrorType.NOT_FOUND, ((Result.Failure<List<ActivityResponse>>) result).errorType());
@@ -186,11 +192,11 @@ public class ActivitiesServiceTest {
     void updateActivity_returnsSuccess_whenActivityExists() {
         Activity activity = new Activity("Football", null, null, futureDate, null, null, family, List.of());
         ReflectionTestUtils.setField(activity, "id", 1L);
-        when(activitiesRepository.findById(1L)).thenReturn(Optional.of(activity));
+        when(activitiesRepository.findByIdAndFamily_Id(1L, 1L)).thenReturn(Optional.of(activity));
         when(activitiesRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
         UpdateActivityRequest req = new UpdateActivityRequest("Swimming", null, null, futureDate, null, null, null);
-        Result<ActivityResponse> result = activitiesService.updateActivity(1L, req);
+        Result<ActivityResponse> result = activitiesService.updateActivity(1L, req, 1L);
 
         assertInstanceOf(Result.Success.class, result);
         assertEquals("Swimming", ((Result.Success<ActivityResponse>) result).value().name());
@@ -201,12 +207,13 @@ public class ActivitiesServiceTest {
     void updateActivity_returnsSuccess_withParticipants() {
         Activity activity = new Activity("Football", null, null, futureDate, null, null, family, List.of());
         ReflectionTestUtils.setField(activity, "id", 1L);
-        when(activitiesRepository.findById(1L)).thenReturn(Optional.of(activity));
+        when(activitiesRepository.findByIdAndFamily_Id(1L, 1L)).thenReturn(Optional.of(activity));
         when(familyMemberRepository.findById(10L)).thenReturn(Optional.of(member));
         when(activitiesRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
-        UpdateActivityRequest req = new UpdateActivityRequest("Swimming", null, null, futureDate, null, null, List.of(10L));
-        Result<ActivityResponse> result = activitiesService.updateActivity(1L, req);
+        UpdateActivityRequest req = new UpdateActivityRequest("Swimming", null, null, futureDate, null, null,
+                List.of(10L));
+        Result<ActivityResponse> result = activitiesService.updateActivity(1L, req, 1L);
 
         assertInstanceOf(Result.Success.class, result);
         assertEquals(1, ((Result.Success<ActivityResponse>) result).value().participants().size());
@@ -214,10 +221,10 @@ public class ActivitiesServiceTest {
 
     @Test
     void updateActivity_returnsNotFound_whenActivityMissing() {
-        when(activitiesRepository.findById(99L)).thenReturn(Optional.empty());
+        when(activitiesRepository.findByIdAndFamily_Id(99L, 1L)).thenReturn(Optional.empty());
 
         UpdateActivityRequest req = new UpdateActivityRequest("Swimming", null, null, futureDate, null, null, null);
-        Result<ActivityResponse> result = activitiesService.updateActivity(99L, req);
+        Result<ActivityResponse> result = activitiesService.updateActivity(99L, req, 1L);
 
         assertInstanceOf(Result.Failure.class, result);
         assertEquals(Result.ErrorType.NOT_FOUND, ((Result.Failure<ActivityResponse>) result).errorType());
@@ -229,12 +236,13 @@ public class ActivitiesServiceTest {
     void updateActivity_skipsUnknownParticipants() {
         Activity activity = new Activity("Football", null, null, futureDate, null, null, family, List.of());
         ReflectionTestUtils.setField(activity, "id", 1L);
-        when(activitiesRepository.findById(1L)).thenReturn(Optional.of(activity));
+        when(activitiesRepository.findByIdAndFamily_Id(1L, 1L)).thenReturn(Optional.of(activity));
         when(familyMemberRepository.findById(99L)).thenReturn(Optional.empty());
         when(activitiesRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
-        UpdateActivityRequest req = new UpdateActivityRequest("Swimming", null, null, futureDate, null, null, List.of(99L));
-        Result<ActivityResponse> result = activitiesService.updateActivity(1L, req);
+        UpdateActivityRequest req = new UpdateActivityRequest("Swimming", null, null, futureDate, null, null,
+                List.of(99L));
+        Result<ActivityResponse> result = activitiesService.updateActivity(1L, req, 1L);
 
         assertInstanceOf(Result.Success.class, result);
         assertTrue(((Result.Success<ActivityResponse>) result).value().participants().isEmpty());
@@ -246,9 +254,9 @@ public class ActivitiesServiceTest {
 
     @Test
     void deleteActivity_returnsSuccess_whenActivityExists() {
-        when(activitiesRepository.existsById(1L)).thenReturn(true);
+        when(activitiesRepository.existsByIdAndFamily_Id(1L, 1L)).thenReturn(true);
 
-        Result<Void> result = activitiesService.deleteActivity(1L);
+        Result<Void> result = activitiesService.deleteActivity(1L, 1L);
 
         assertInstanceOf(Result.Success.class, result);
         verify(activitiesRepository).deleteById(1L);
@@ -256,9 +264,9 @@ public class ActivitiesServiceTest {
 
     @Test
     void deleteActivity_returnsNotFound_whenActivityMissing() {
-        when(activitiesRepository.existsById(99L)).thenReturn(false);
+        when(activitiesRepository.existsByIdAndFamily_Id(99L, 1L)).thenReturn(false);
 
-        Result<Void> result = activitiesService.deleteActivity(99L);
+        Result<Void> result = activitiesService.deleteActivity(99L, 1L);
 
         assertInstanceOf(Result.Failure.class, result);
         assertEquals(Result.ErrorType.NOT_FOUND, ((Result.Failure<Void>) result).errorType());

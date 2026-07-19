@@ -1,16 +1,25 @@
 package com.heins.familyplanner.todos;
 
+import com.heins.familyplanner.accounts.Repositories.FamilyAccountsRepository;
+import com.heins.familyplanner.accounts.entities.FamilyAccount;
 import com.heins.familyplanner.exceptions.Result;
+import com.heins.familyplanner.family.entities.Family;
+import com.heins.familyplanner.security.JwtService;
 import com.heins.familyplanner.todos.dtos.TodoResponse;
+import com.heins.familyplanner.config.TestWebMvcConfig;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -19,149 +28,215 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(TodoController.class)
 @ImportAutoConfiguration(exclude = com.heins.familyplanner.configuration.JpaConfig.class)
+@Import(TestWebMvcConfig.class)
 public class TodoControllerTest {
 
-    @Autowired
-    MockMvc mockMvc;
+        @Autowired
+        MockMvc mockMvc;
 
-    @MockitoBean
-    TodoService todoService;
+        @MockitoBean
+        TodoService todoService;
 
-    // -------------------------------------------------------
-    // GET /api/todos
-    // -------------------------------------------------------
-    @Test
-    void getTodos_returnsOk_whenFamilyExists() throws Exception {
-        TodoResponse todo = new TodoResponse(1L, "Buy milk", null, null, false, 1L, null);
-        when(todoService.getTasks(1L, null)).thenReturn(Result.success(List.of(todo)));
+        @MockitoBean
+        JwtService jwtService;
 
-        mockMvc.perform(get("/api/todos").param("familyId", "1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].name").value("Buy milk"));
+        @MockitoBean
+        FamilyAccountsRepository accountsRepository;
 
-        verify(todoService).getTasks(1L, null);
-    }
+        private static final String TOKEN = "Bearer test-token";
 
-    @Test
-    void getTodos_returnsNotFound_whenFamilyMissing() throws Exception {
-        when(todoService.getTasks(99L, null)).thenReturn(Result.notFound("Family not found: 99"));
+        private FamilyAccount mockAccount(Long familyId) {
+                Family family = new Family("Test");
+                ReflectionTestUtils.setField(family, "id", familyId);
+                FamilyAccount account = new FamilyAccount("test-slug", "hash", family);
+                ReflectionTestUtils.setField(account, "id", 1L);
+                return account;
+        }
 
-        mockMvc.perform(get("/api/todos").param("familyId", "99"))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.detail").value("Family not found: 99"));
-    }
+        @BeforeEach
+        void setUpJwt() {
+                when(jwtService.isTokenValid("test-token")).thenReturn(true);
+                when(jwtService.extractSlug("test-token")).thenReturn("test-slug");
+                when(accountsRepository.findByPublicSlug("test-slug")).thenReturn(Optional.of(mockAccount(1L)));
+        }
 
-    // -------------------------------------------------------
-    // POST /api/todos
-    // -------------------------------------------------------
-    @Test
-    void addTodo_returnsCreated_whenValid() throws Exception {
-        TodoResponse todo = new TodoResponse(1L, "Buy milk", null, null, false, 1L, null);
-        when(todoService.addTask(any())).thenReturn(Result.success(todo));
+        // -------------------------------------------------------
+        // GET /api/todos
+        // -------------------------------------------------------
+        @Test
+        void getTodos_returnsOk_whenFamilyExists() throws Exception {
+                TodoResponse todo = new TodoResponse(1L, "Buy milk", null, null, false, 1L, null);
+                when(todoService.getTasks(any())).thenReturn(Result.success(List.of(todo)));
 
-        String json = """
-                { "name": "Buy milk", "familyId": 1 }
-                """;
+                mockMvc.perform(get("/api/todos")
+                                .param("familyId", "1")
+                                .header("Authorization", TOKEN))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.length()").value(1))
+                                .andExpect(jsonPath("$[0].id").value(1))
+                                .andExpect(jsonPath("$[0].name").value("Buy milk"));
 
-        mockMvc.perform(post("/api/todos")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("Buy milk"));
-    }
+                verify(todoService).getTasks(any());
+        }
 
-    @Test
-    void addTodo_returnsBadRequest_whenNameMissing() throws Exception {
-        mockMvc.perform(post("/api/todos")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{ \"familyId\": 1 }"))
-                .andExpect(status().isBadRequest());
+        @Test
+        void getTodos_returnsNotFound_whenFamilyMissing() throws Exception {
+                when(todoService.getTasks(any())).thenReturn(Result.notFound("Family not found: 1"));
 
-        verify(todoService, never()).addTask(any());
-    }
+                mockMvc.perform(get("/api/todos")
+                                .param("familyId", "1")
+                                .header("Authorization", TOKEN))
+                                .andExpect(status().isNotFound())
+                                .andExpect(jsonPath("$.detail").value("Family not found: 1"));
+        }
 
-    @Test
-    void addTodo_returnsBadRequest_whenFamilyIdMissing() throws Exception {
-        mockMvc.perform(post("/api/todos")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{ \"name\": \"Buy milk\" }"))
-                .andExpect(status().isBadRequest());
+        @Test
+        void getTodos_returnsForbidden_whenFamilyIdDoesNotMatchAccount() throws Exception {
+                mockMvc.perform(get("/api/todos")
+                                .param("familyId", "99")
+                                .header("Authorization", TOKEN))
+                                .andExpect(status().isForbidden())
+                                .andExpect(jsonPath("$.detail").value("Family access is not permitted"))
+                                .andExpect(jsonPath("$.type")
+                                                .value("https://familyplanner.heins.com/errors/forbidden"));
 
-        verify(todoService, never()).addTask(any());
-    }
+                verify(todoService, never()).getTasks(any());
+        }
 
-    @Test
-    void addTodo_returnsNotFound_whenFamilyMissing() throws Exception {
-        when(todoService.addTask(any())).thenReturn(Result.notFound("Family not found: 99"));
+        // -------------------------------------------------------
+        // POST /api/todos
+        // -------------------------------------------------------
+        @Test
+        void addTodo_returnsCreated_whenValid() throws Exception {
+                TodoResponse todo = new TodoResponse(1L, "Buy milk", null, null, false, 1L, null);
+                when(todoService.addTask(any())).thenReturn(Result.success(todo));
 
-        String json = """
-                { "name": "Buy milk", "familyId": 99 }
-                """;
+                String json = """
+                                { "name": "Buy milk", "familyId": 1 }
+                                """;
 
-        mockMvc.perform(post("/api/todos")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.detail").value("Family not found: 99"));
-    }
+                mockMvc.perform(post("/api/todos")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json)
+                                .header("Authorization", TOKEN))
+                                .andExpect(status().isCreated())
+                                .andExpect(jsonPath("$.id").value(1))
+                                .andExpect(jsonPath("$.name").value("Buy milk"));
+        }
 
-    // -------------------------------------------------------
-    // PUT /api/todos
-    // -------------------------------------------------------
-    @Test
-    void updateTodo_returnsOk_whenValid() throws Exception {
-        TodoResponse updated = new TodoResponse(1L, "Updated name", null, null, true, 1L, null);
-        when(todoService.updateTodo(any())).thenReturn(Result.success(updated));
+        @Test
+        void addTodo_returnsBadRequest_whenNameMissing() throws Exception {
+                mockMvc.perform(post("/api/todos")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{ \"familyId\": 1 }")
+                                .header("Authorization", TOKEN))
+                                .andExpect(status().isBadRequest());
 
-        String json = """
-                { "id": 1, "name": "Updated name", "completed": true }
-                """;
+                verify(todoService, never()).addTask(any());
+        }
 
-        mockMvc.perform(put("/api/todos")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Updated name"))
-                .andExpect(jsonPath("$.completed").value(true));
-    }
+        @Test
+        void addTodo_returnsBadRequest_whenFamilyIdMissing() throws Exception {
+                mockMvc.perform(post("/api/todos")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{ \"name\": \"Buy milk\" }")
+                                .header("Authorization", TOKEN))
+                                .andExpect(status().isBadRequest());
 
-    @Test
-    void updateTodo_returnsNotFound_whenTodoMissing() throws Exception {
-        when(todoService.updateTodo(any())).thenReturn(Result.notFound("Todo not found: 99"));
+                verify(todoService, never()).addTask(any());
+        }
 
-        String json = """
-                { "id": 99, "name": "Updated name", "completed": false }
-                """;
+        @Test
+        void addTodo_returnsNotFound_whenFamilyMissing() throws Exception {
+                when(todoService.addTask(any())).thenReturn(Result.notFound("Family not found: 99"));
 
-        mockMvc.perform(put("/api/todos")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.detail").value("Todo not found: 99"));
-    }
+                String json = """
+                                { "name": "Buy milk", "familyId": 1 }
+                                """;
 
-    // -------------------------------------------------------
-    // DELETE /api/todos/{id}
-    // -------------------------------------------------------
-    @Test
-    void deleteTodo_returnsNoContent_whenTodoExists() throws Exception {
-        when(todoService.deleteTodo(1L)).thenReturn(Result.success(null));
+                mockMvc.perform(post("/api/todos")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json)
+                                .header("Authorization", TOKEN))
+                                .andExpect(status().isNotFound())
+                                .andExpect(jsonPath("$.detail").value("Family not found: 99"));
+        }
 
-        mockMvc.perform(delete("/api/todos/1"))
-                .andExpect(status().isNoContent());
+        // -------------------------------------------------------
+        // PUT /api/todos/{id}
+        // -------------------------------------------------------
+        @Test
+        void updateTodo_returnsOk_whenValid() throws Exception {
+                TodoResponse updated = new TodoResponse(1L, "Updated name", null, null, true, 1L, null);
+                when(todoService.updateTodo(any(), any(), any())).thenReturn(Result.success(updated));
 
-        verify(todoService).deleteTodo(1L);
-    }
+                String json = """
+                                { "name": "Updated name", "completed": true }
+                                """;
 
-    @Test
-    void deleteTodo_returnsNotFound_whenTodoMissing() throws Exception {
-        when(todoService.deleteTodo(99L)).thenReturn(Result.notFound("Todo not found: 99"));
+                mockMvc.perform(put("/api/todos/1")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json)
+                                .header("Authorization", TOKEN))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.name").value("Updated name"))
+                                .andExpect(jsonPath("$.completed").value(true));
+        }
 
-        mockMvc.perform(delete("/api/todos/99"))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.detail").value("Todo not found: 99"));
-    }
+        @Test
+        void updateTodo_returnsNotFound_whenTodoMissing() throws Exception {
+                when(todoService.updateTodo(any(), any(), any())).thenReturn(Result.notFound("Todo not found: 99"));
+
+                String json = """
+                                { "name": "Updated name", "completed": false }
+                                """;
+
+                mockMvc.perform(put("/api/todos/99")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json)
+                                .header("Authorization", TOKEN))
+                                .andExpect(status().isNotFound())
+                                .andExpect(jsonPath("$.detail").value("Todo not found: 99"));
+        }
+
+        // -------------------------------------------------------
+        // DELETE /api/todos/{id}
+        // -------------------------------------------------------
+        @Test
+        void addTodo_returnsForbidden_whenFamilyIdDoesNotMatchAccount() throws Exception {
+                mockMvc.perform(post("/api/todos")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{ \"name\": \"Buy milk\", \"familyId\": 99 }")
+                                .header("Authorization", TOKEN))
+                                .andExpect(status().isForbidden())
+                                .andExpect(jsonPath("$.detail").value("Family access is not permitted"))
+                                .andExpect(jsonPath("$.type")
+                                                .value("https://familyplanner.heins.com/errors/forbidden"));
+
+                verify(todoService, never()).addTask(any());
+        }
+
+        // -------------------------------------------------------
+        // DELETE /api/todos/{id}
+        // -------------------------------------------------------
+        @Test
+        void deleteTodo_returnsNoContent_whenTodoExists() throws Exception {
+                when(todoService.deleteTodo(any(), any())).thenReturn(Result.success(null));
+
+                mockMvc.perform(delete("/api/todos/1")
+                                .header("Authorization", TOKEN))
+                                .andExpect(status().isNoContent());
+
+                verify(todoService).deleteTodo(1L, 1L);
+        }
+
+        @Test
+        void deleteTodo_returnsNotFound_whenTodoMissing() throws Exception {
+                when(todoService.deleteTodo(any(), any())).thenReturn(Result.notFound("Todo not found: 99"));
+
+                mockMvc.perform(delete("/api/todos/99")
+                                .header("Authorization", TOKEN))
+                                .andExpect(status().isNotFound())
+                                .andExpect(jsonPath("$.detail").value("Todo not found: 99"));
+        }
 }

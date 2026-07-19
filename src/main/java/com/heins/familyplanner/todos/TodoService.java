@@ -5,6 +5,7 @@ import com.heins.familyplanner.family.entities.FamilyMember;
 import com.heins.familyplanner.family.repositories.FamilyMemberRepository;
 import com.heins.familyplanner.family.repositories.FamilyRepository;
 import com.heins.familyplanner.todos.dtos.AddTodoRequest;
+import com.heins.familyplanner.todos.dtos.GetTodosRequest;
 import com.heins.familyplanner.todos.dtos.TodoResponse;
 import com.heins.familyplanner.todos.dtos.UpdateTodoRequest;
 import com.heins.familyplanner.todos.entities.Todo;
@@ -61,22 +62,20 @@ public class TodoService {
         return Result.success(todoMapper.toTodoResponse(todo));
     }
 
-    public Result<List<TodoResponse>> getTasks(Long familyId, Long memberId) {
-        log.debug("Fetching todos for familyId: {}, memberId: {}", familyId, memberId);
+    public Result<List<TodoResponse>> getTasks(GetTodosRequest request) {
+        log.debug("Fetching todos for familyId: {}, memberId: {}", request.familyId(), request.assigneeId());
 
-        if (!familyRepository.existsById(familyId)) {
-            log.warn("Family not found: {}", familyId);
-            return Result.notFound("Family not found: " + familyId);
+        if (!familyRepository.existsById(request.familyId())) {
+            log.warn("Family not found: {}", request.familyId());
+            return Result.notFound("Family not found: " + request.familyId());
         }
 
         Specification<Todo> spec = (_, _, _) -> null;
 
-        spec = spec.and((root, _, cb) ->
-                cb.equal(root.get("family").get("id"), familyId));
+        spec = spec.and((root, _, cb) -> cb.equal(root.get("family").get("id"), request.familyId()));
 
-        if (memberId != null) {
-            spec = spec.and((root, _, cb) ->
-                    cb.equal(root.get("assignee").get("id"), memberId));
+        if (request.assigneeId() != null) {
+            spec = spec.and((root, _, cb) -> cb.equal(root.get("assignee").get("id"), request.assigneeId()));
         }
 
         return Result.success(todoRepository
@@ -87,8 +86,14 @@ public class TodoService {
     }
 
     @Transactional
-    public Result<TodoResponse> updateTodo(UpdateTodoRequest req) {
-        log.debug("Updating todo id: {}", req.id());
+    public Result<TodoResponse> updateTodo(Long id, UpdateTodoRequest req, Long familyId) {
+        log.debug("Updating todo id: {}", id);
+
+        var todoOpt = todoRepository.findByIdAndFamily_Id(id, familyId);
+        if (todoOpt.isEmpty()) {
+            log.warn("Todo not found: {}", id);
+            return Result.notFound("Todo not found: " + id);
+        }
 
         FamilyMember assignee = null;
         if (req.assigneeId() != null) {
@@ -100,12 +105,6 @@ public class TodoService {
             assignee = assigneeOpt.get();
         }
 
-        var todoOpt = todoRepository.findById(req.id());
-        if (todoOpt.isEmpty()) {
-            log.warn("Todo not found: {}", req.id());
-            return Result.notFound("Todo not found: " + req.id());
-        }
-
         Todo todo = todoOpt.get();
         todo.update(req.name(), req.description(), req.deuDate(), req.completed(), assignee);
         todo = todoRepository.save(todo);
@@ -114,16 +113,16 @@ public class TodoService {
     }
 
     @Transactional
-    public Result<Void> deleteTodo(Long id) {
+    public Result<Void> deleteTodo(Long id, Long familyId) {
         log.debug("Deleting todo id: {}", id);
 
-        if (!todoRepository.existsById(id)) {
+        if (!todoRepository.existsByIdAndFamily_Id(id, familyId)) {
             log.warn("Todo not found: {}", id);
             return Result.notFound("Todo not found: " + id);
         }
+
         todoRepository.deleteById(id);
         log.info("Todo deleted: {}", id);
         return Result.success(null);
     }
 }
-

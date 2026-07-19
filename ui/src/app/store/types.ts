@@ -2,6 +2,26 @@ import { createSelector } from "@reduxjs/toolkit";
 
 export type FamilyRole = "DAD" | "MOM" | "CHILD";
 
+export interface LoginRequest {
+  familySlug: string;
+  password: string;
+}
+
+export interface RegisterRequest extends LoginRequest {
+  familyName: string;
+}
+
+export interface AuthResponse {
+  token: string;
+}
+
+export interface ProblemDetails {
+  type?: string;
+  title?: string;
+  status?: number;
+  detail?: string;
+}
+
 export interface FamilyMember {
   id: number;
   name: string;
